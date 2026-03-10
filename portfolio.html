@@ -543,11 +543,11 @@
         if (b.coords)  { const els = document.querySelectorAll(".info-section p");     if(els[1]) els[1].textContent = b.coords; }
 
         // Nav links
-        const navLinks = document.querySelectorAll(".values-section ul li a");
-        if(b.nav1 && navLinks[0]) navLinks[0].textContent = b.nav1;
-        if(b.nav2 && navLinks[1]) navLinks[1].textContent = b.nav2;
-        if(b.nav3 && navLinks[2]) navLinks[2].textContent = b.nav3;
-        if(b.nav4 && navLinks[3]) navLinks[3].textContent = b.nav4;
+        const navLinkAs = document.querySelectorAll(".values-section ul li a");
+        if(b.nav1 && navLinkAs[0]) navLinkAs[0].textContent = b.nav1;
+        if(b.nav2 && navLinkAs[1]) navLinkAs[1].textContent = b.nav2;
+        if(b.nav3 && navLinkAs[2]) navLinkAs[2].textContent = b.nav3;
+        if(b.nav4 && navLinkAs[3]) navLinkAs[3].textContent = b.nav4;
 
         // Email
         if (s.email) { const el = document.querySelector(".contact-section a"); if(el){ el.href=`mailto:${s.email}`; el.textContent=s.email; } }
