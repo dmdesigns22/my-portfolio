@@ -290,6 +290,39 @@
     }
     .tag-green { background:rgba(74,222,128,.1); color:var(--green); }
     .tag-yellow { background:rgba(251,191,36,.1); color:var(--yellow); }
+
+    /* ── Toggle Switch ── */
+    .toggle-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.75rem 0; border-bottom:1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-label { font-size:13px; font-weight:500; color:var(--text-mid); }
+    .toggle-label small { display:block; font-size:11px; color:var(--text-dim); font-weight:400; margin-top:.15rem; font-family:"TheGoodMonolith",monospace; text-transform:uppercase; letter-spacing:.05em; }
+    .toggle {
+      position:relative; width:40px; height:22px; flex-shrink:0;
+    }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider {
+      position:absolute; cursor:pointer; inset:0;
+      background:#333; border-radius:22px;
+      transition:.3s ease;
+    }
+    .toggle-slider::before {
+      content:""; position:absolute;
+      width:16px; height:16px; border-radius:50%;
+      background:#888; left:3px; top:3px;
+      transition:.3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .toggle input:checked + .toggle-slider { background:rgba(74,222,128,.25); }
+    .toggle input:checked + .toggle-slider::before { background:var(--green); transform:translateX(18px); }
+
+    .toggle-group-title {
+      font-family:"TheGoodMonolith",monospace; font-size:10px;
+      text-transform:uppercase; letter-spacing:.1em; color:var(--text-dim);
+      margin: 1.25rem 0 .5rem; padding-bottom:.5rem;
+      border-bottom:1px solid var(--border);
+    }
   </style>
 </head>
 <body>
@@ -310,6 +343,10 @@
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       Images
     </a>
+    <a class="nav-item" data-section="grid">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Grid Settings
+    </a>
     <a class="nav-item" data-section="branding">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       Branding
@@ -317,6 +354,10 @@
     <a class="nav-item" data-section="social">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       Social & Contact
+    </a>
+    <a class="nav-item" data-section="visibility">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Visibility
     </a>
   </div>
   <div class="sidebar-footer">
@@ -404,7 +445,7 @@
         <input type="url" id="newImageUrl" placeholder="https://res.cloudinary.com/your-image.jpg" />
         <button class="btn btn-primary" onclick="addImage()">Add Image</button>
       </div>
-      <p style="font-size:12px;color:var(--text-dim);">Tip: Use <strong style="color:var(--text-mid)">Cloudinary</strong> (free) to host and get direct image URLs. Supports JPG, PNG, WebP.</p>
+      <p style="font-size:12px;color:var(--text-dim);">Tip: Use <strong style="color:var(--text-mid)">Cloudinary</strong> (free) to host and get direct image URLs. Your grid shows <strong style="color:var(--text-mid)">20 images</strong> (5 columns × 4 rows), each appearing once.</p>
     </div>
 
     <div class="images-toolbar">
@@ -460,7 +501,63 @@
     </div>
   </div>
 
+  <!-- GRID SETTINGS -->
+  <div class="section" id="section-grid">
+    <div class="section-header">
+      <h2>Grid Settings</h2>
+      <p>Control the layout of your portfolio gallery. Changes apply next time the portfolio loads.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Grid Size</h3></div>
+      <div class="field-row">
+        <div class="field">
+          <label>Columns</label>
+          <input type="number" id="g-cols" min="1" max="12" placeholder="5" oninput="updateGridPreview();markUnsaved()"/>
+        </div>
+        <div class="field">
+          <label>Rows</label>
+          <input type="number" id="g-rows" min="1" max="20" placeholder="4" oninput="updateGridPreview();markUnsaved()"/>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:.5rem;padding:.875rem;background:var(--bg);border-radius:6px;border:1px solid var(--border);">
+        <div style="font-family:'TheGoodMonolith',monospace;font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;min-width:80px;">Total cells</div>
+        <div id="g-total" style="font-size:22px;font-weight:500;letter-spacing:-.03em;">20</div>
+        <div id="g-match" style="font-size:12px;color:var(--text-dim);margin-left:.5rem;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Item Size</h3></div>
+      <div class="field" style="max-width:50%">
+        <label>Cell size (px)</label>
+        <input type="number" id="g-size" min="100" max="600" placeholder="320" oninput="markUnsaved()"/>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:.75rem;">Default is 320px. Smaller = more images visible at once. Larger = more detail per image.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Quick Presets</h3></div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="applyPreset(2,3,320)">6 images<br><span style="font-size:10px;color:var(--text-dim)">2×3</span></button>
+        <button class="btn btn-ghost" onclick="applyPreset(3,3,320)">9 images<br><span style="font-size:10px;color:var(--text-dim)">3×3</span></button>
+        <button class="btn btn-ghost" onclick="applyPreset(4,3,320)">12 images<br><span style="font-size:10px;color:var(--text-dim)">4×3</span></button>
+        <button class="btn btn-ghost" onclick="applyPreset(4,4,320)">16 images<br><span style="font-size:10px;color:var(--text-dim)">4×4</span></button>
+        <button class="btn btn-ghost" onclick="applyPreset(5,4,320)">20 images<br><span style="font-size:10px;color:var(--text-dim)">5×4</span></button>
+        <button class="btn btn-ghost" onclick="applyPreset(5,6,320)">30 images<br><span style="font-size:10px;color:var(--text-dim)">5×6</span></button>
+        <button class="btn btn-ghost" onclick="applyPreset(6,8,280)">48 images<br><span style="font-size:10px;color:var(--text-dim)">6×8</span></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Visual Preview</h3></div>
+      <div id="gridPreview" style="display:grid;gap:3px;width:100%;max-width:400px;margin:0 auto;"></div>
+      <p style="font-size:11px;color:var(--text-dim);text-align:center;margin-top:.75rem;font-family:'TheGoodMonolith',monospace;text-transform:uppercase;letter-spacing:.05em;">Layout preview</p>
+    </div>
+  </div>
+
   <!-- SOCIAL -->
+
   <div class="section" id="section-social">
     <div class="section-header">
       <h2>Social & Contact</h2>
@@ -491,6 +588,101 @@
       </div>
     </div>
   </div>
+
+  <!-- VISIBILITY -->
+  <div class="section" id="section-visibility">
+    <div class="section-header">
+      <h2>Visibility</h2>
+      <p>Toggle any element on or off. Changes apply when you save.</p>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Logo</h3></div>
+      <div class="toggle-row">
+        <div class="toggle-label">Logo circles<small>Top left header logo</small></div>
+        <label class="toggle"><input type="checkbox" id="v-logo" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Navigation Menu</h3></div>
+      <div class="toggle-row">
+        <div class="toggle-label">+Menu label<small>Section heading</small></div>
+        <label class="toggle"><input type="checkbox" id="v-menu-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Work<small>Nav link 1</small></div>
+        <label class="toggle"><input type="checkbox" id="v-nav1" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">About<small>Nav link 2</small></div>
+        <label class="toggle"><input type="checkbox" id="v-nav2" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Services<small>Nav link 3</small></div>
+        <label class="toggle"><input type="checkbox" id="v-nav3" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Contact<small>Nav link 4</small></div>
+        <label class="toggle"><input type="checkbox" id="v-nav4" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Studio Section</h3></div>
+      <div class="toggle-row">
+        <div class="toggle-label">+Studio label<small>Section heading</small></div>
+        <label class="toggle"><input type="checkbox" id="v-studio-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">City<small>Location line 1</small></div>
+        <label class="toggle"><input type="checkbox" id="v-city" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">State / Region<small>Location line 2</small></div>
+        <label class="toggle"><input type="checkbox" id="v-state" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Connect Section</h3></div>
+      <div class="toggle-row">
+        <div class="toggle-label">+Connect label<small>Section heading</small></div>
+        <label class="toggle"><input type="checkbox" id="v-connect-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Email address<small>Contact link</small></div>
+        <label class="toggle"><input type="checkbox" id="v-email" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Follow Section</h3></div>
+      <div class="toggle-row">
+        <div class="toggle-label">+Follow label<small>Section heading</small></div>
+        <label class="toggle"><input type="checkbox" id="v-follow-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Instagram<small>Social link</small></div>
+        <label class="toggle"><input type="checkbox" id="v-instagram" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Twitter / X<small>Social link</small></div>
+        <label class="toggle"><input type="checkbox" id="v-twitter" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">LinkedIn<small>Social link</small></div>
+        <label class="toggle"><input type="checkbox" id="v-linkedin" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Footer</h3></div>
+      <div class="toggle-row">
+        <div class="toggle-label">Tagline<small>Footer line 1</small></div>
+        <label class="toggle"><input type="checkbox" id="v-tagline" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">Coordinates<small>Footer line 2</small></div>
+        <label class="toggle"><input type="checkbox" id="v-coords" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Toast -->
@@ -514,9 +706,30 @@
       { url:"https://assets.codepen.io/7558/orange-portrait_06.jpg", title:"City Breath", description:"Steel, glass, heartbeat. Edit until the street's rhythm fits inside a single grid." },
       { url:"https://assets.codepen.io/7558/orange-portrait_07.jpg", title:"Soft Focus, Sharp Intent", description:"Blur the noise, not the purpose. What matters remains in crisp relief." },
       { url:"https://assets.codepen.io/7558/orange-portrait_08.jpg", title:"Time-Tested, Future-Ready", description:"Classics survive because they serve. Keep the spine, tune the surface, respect the lineage." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_09.jpg", title:"Grace Under Revision", description:"Drafts don't apologize. They evolve. Let elegance emerge through cuts, not flourishes." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_10.jpg", title:"Style That Outlasts Seasons", description:"Trends talk. Principles walk. Build on principles and let trends accessorize." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_11.jpg", title:"Edges and Experiments", description:"Push just past comfort. Leave a fingerprint the algorithm can't fake." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_12.jpg", title:"Portrait of Attention", description:"Form is what you see. Presence is what you feel. Aim for presence." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_13.jpg", title:"Light Speaks First", description:"Expose for truth. Shadows are sentences, highlights the punctuation." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_14.jpg", title:"Contemporary Is a Moving Target", description:"Design for now by listening deeper than now. The signal is older than the feed." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_01.jpg", title:"Vision, Then Precision", description:"Dream wide, ship tight. Let imagination roam and execution walk in single-point focus." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_02.jpg", title:"Geometry of Poise", description:"Angles carry attitude. Align posture, light, and line until the frame breathes." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_03.jpg", title:"Natural Light, Natural Truth", description:"Open the window and remove the mask. Authenticity needs less wattage, more honesty." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_04.jpg", title:"Studio: The Controlled Wild", description:"Dial every knob, then listen for the unscripted moment. Keep the lens ready." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_05.jpg", title:"Invent the Angle", description:"Rotate the problem ninety degrees. Fresh perspective isn't luck—it's a habit." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_06.jpg", title:"Editorial Nerve", description:"Carry yourself like you belong, then earn it with craft. The camera can tell." },
     ],
     branding: { city:"Los Angeles", state:"California", tagline:"Est. 2025 • Summer Days", coords:"34.0522° N, 118.2437° W", nav1:"Work", nav2:"About", nav3:"Services", nav4:"Contact" },
-    social: { email:"hi@filip.fyi", instagram:"filipz__", twitter:"filipz", linkedin:"filipzrnzevic" }
+    social: { email:"hi@filip.fyi", instagram:"filipz__", twitter:"filipz", linkedin:"filipzrnzevic" },
+    grid: { cols:5, rows:4, itemSize:320 },
+    visibility: {
+      logo:true, "menu-title":true,
+      nav1:true, nav2:true, nav3:true, nav4:true,
+      "studio-title":true, city:true, state:true,
+      "connect-title":true, email:true,
+      "follow-title":true, instagram:true, twitter:true, linkedin:true,
+      tagline:true, coords:true
+    }
   };
 
   // ── State ──
@@ -555,7 +768,7 @@
 
   // ── Populate form fields ──
   function populateFields() {
-    const b = data.branding, s = data.social;
+    const b = data.branding, s = data.social, g = data.grid || {cols:5,rows:4,itemSize:320};
     document.getElementById("b-city").value    = b.city    || "";
     document.getElementById("b-state").value   = b.state   || "";
     document.getElementById("b-tagline").value = b.tagline || "";
@@ -568,10 +781,26 @@
     document.getElementById("s-instagram").value = s.instagram || "";
     document.getElementById("s-twitter").value   = s.twitter   || "";
     document.getElementById("s-linkedin").value  = s.linkedin  || "";
+    document.getElementById("g-cols").value     = g.cols     || 5;
+    document.getElementById("g-rows").value     = g.rows     || 4;
+    document.getElementById("g-size").value     = g.itemSize || 320;
+    updateGridPreview();
+    // visibility toggles
+    const v = data.visibility || {};
+    const vKeys = ["logo","menu-title","nav1","nav2","nav3","nav4","studio-title","city","state","connect-title","email","follow-title","instagram","twitter","linkedin","tagline","coords"];
+    vKeys.forEach(k => {
+      const el = document.getElementById("v-"+k);
+      if (el) el.checked = (v[k] !== undefined) ? v[k] : true;
+    });
   }
 
   // ── Collect form fields ──
   function collectFields() {
+    data.grid = {
+      cols:     parseInt(document.getElementById("g-cols").value) || 5,
+      rows:     parseInt(document.getElementById("g-rows").value) || 4,
+      itemSize: parseInt(document.getElementById("g-size").value) || 320,
+    };
     data.branding = {
       city:    document.getElementById("b-city").value,
       state:   document.getElementById("b-state").value,
@@ -595,6 +824,13 @@
         data.images[i].title       = card.querySelector(".img-title").value;
         data.images[i].description = card.querySelector(".img-desc").value;
       }
+    });
+    // collect visibility toggles
+    const vKeys = ["logo","menu-title","nav1","nav2","nav3","nav4","studio-title","city","state","connect-title","email","follow-title","instagram","twitter","linkedin","tagline","coords"];
+    data.visibility = {};
+    vKeys.forEach(k => {
+      const el = document.getElementById("v-"+k);
+      if (el) data.visibility[k] = el.checked;
     });
   }
 
@@ -701,7 +937,59 @@
     setTimeout(() => toast.classList.remove("show"), 2800);
   }
 
-  // ── Mark unsaved on any input ──
+  // ── Grid preview ──
+  function updateGridPreview() {
+    const cols = parseInt(document.getElementById("g-cols").value) || 5;
+    const rows = parseInt(document.getElementById("g-rows").value) || 4;
+    const total = cols * rows;
+    const imgCount = data.images.length;
+
+    document.getElementById("g-total").textContent = total;
+
+    const match = document.getElementById("g-match");
+    if (imgCount === total) {
+      match.textContent = `✓ Matches your ${imgCount} images perfectly`;
+      match.style.color = "var(--green)";
+    } else if (imgCount < total) {
+      match.textContent = `⚠ You have ${imgCount} images — ${total - imgCount} cells will be empty`;
+      match.style.color = "var(--yellow)";
+    } else {
+      match.textContent = `⚠ You have ${imgCount} images — only first ${total} will show`;
+      match.style.color = "var(--yellow)";
+    }
+
+    // Draw mini preview grid
+    const preview = document.getElementById("gridPreview");
+    preview.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    preview.innerHTML = "";
+    for (let i = 0; i < total; i++) {
+      const cell = document.createElement("div");
+      const hasImage = i < imgCount;
+      cell.style.cssText = `
+        aspect-ratio:1; border-radius:2px;
+        background:${hasImage ? "#333" : "#1a1a1a"};
+        border:1px solid ${hasImage ? "#444" : "#222"};
+        transition:background .2s;
+      `;
+      if (hasImage && data.images[i] && data.images[i].url) {
+        cell.style.backgroundImage = `url(${data.images[i].url})`;
+        cell.style.backgroundSize = "cover";
+        cell.style.backgroundPosition = "center";
+      }
+      preview.appendChild(cell);
+    }
+  }
+
+  function applyPreset(cols, rows, size) {
+    document.getElementById("g-cols").value = cols;
+    document.getElementById("g-rows").value = rows;
+    document.getElementById("g-size").value = size;
+    updateGridPreview();
+    markUnsaved();
+    showToast(`Preset applied: ${cols}×${rows} (${cols*rows} images)`);
+  }
+
+  // ── Grid preview ──
   document.querySelectorAll("input, textarea").forEach(el => {
     el.addEventListener("input", markUnsaved);
   });
