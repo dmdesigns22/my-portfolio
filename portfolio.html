@@ -557,6 +557,23 @@
         if(s.instagram && socialLinks[0]) socialLinks[0].href = `https://instagram.com/${s.instagram}`;
         if(s.twitter   && socialLinks[1]) socialLinks[1].href = `https://x.com/${s.twitter}`;
         if(s.linkedin  && socialLinks[2]) socialLinks[2].href = `https://linkedin.com/in/${s.linkedin}`;
+
+        // Apply custom text from visibility panel (overrides branding defaults)
+        const applyVText = (key, el) => { if (v[key+"-text"] && el) el.textContent = v[key+"-text"]; };
+        applyVText("menu-title",    document.querySelector(".values-section h3"));
+        const navLinkTexts = document.querySelectorAll(".values-section ul li a");
+        applyVText("nav1", navLinkTexts[0]); applyVText("nav2", navLinkTexts[1]);
+        applyVText("nav3", navLinkTexts[2]); applyVText("nav4", navLinkTexts[3]);
+        applyVText("studio-title",  document.querySelector(".location-section h3"));
+        const locPsT = document.querySelectorAll(".location-section p");
+        applyVText("city",  locPsT[0]); applyVText("state", locPsT[1]);
+        applyVText("connect-title", document.querySelector(".contact-section h3"));
+        applyVText("email",         document.querySelector(".contact-section a"));
+        applyVText("follow-title",  document.querySelector(".social-section h3"));
+        const socialLisT = document.querySelectorAll(".social-section ul li a");
+        applyVText("instagram", socialLisT[0]); applyVText("twitter", socialLisT[1]); applyVText("linkedin", socialLisT[2]);
+        const footerPsT = document.querySelectorAll(".info-section p");
+        applyVText("tagline", footerPsT[0]); applyVText("coords", footerPsT[1]);
       }
 
       splitTextIntoLines(element, text) {

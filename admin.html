@@ -293,12 +293,20 @@
 
     /* ── Toggle Switch ── */
     .toggle-row {
-      display:flex; align-items:center; justify-content:space-between;
+      display:flex; align-items:center; gap:.75rem;
       padding:.75rem 0; border-bottom:1px solid var(--border);
     }
     .toggle-row:last-child { border-bottom:none; }
-    .toggle-label { font-size:13px; font-weight:500; color:var(--text-mid); }
+    .toggle-label { font-size:13px; font-weight:500; color:var(--text-mid); flex:1; min-width:0; }
     .toggle-label small { display:block; font-size:11px; color:var(--text-dim); font-weight:400; margin-top:.15rem; font-family:"TheGoodMonolith",monospace; text-transform:uppercase; letter-spacing:.05em; }
+    .toggle-text-input {
+      flex: 0 0 150px; background:var(--bg); border:1px solid var(--border);
+      border-radius:4px; padding:.375rem .625rem; font-size:12px;
+      font-family:"PPNeueMontreal",sans-serif; color:var(--text);
+      outline:none; transition:border-color .2s ease;
+    }
+    .toggle-text-input:focus { border-color:#444; }
+    .toggle-text-input::placeholder { color:var(--text-dim); }
     .toggle {
       position:relative; width:40px; height:22px; flex-shrink:0;
     }
@@ -593,92 +601,108 @@
   <div class="section" id="section-visibility">
     <div class="section-header">
       <h2>Visibility</h2>
-      <p>Toggle any element on or off. Changes apply when you save.</p>
+      <p>Toggle any element on or off and edit its label text. Changes apply when you save.</p>
     </div>
     <div class="card">
       <div class="card-header"><h3>Logo</h3></div>
       <div class="toggle-row">
-        <div class="toggle-label">Logo circles<small>Top left header logo</small></div>
         <label class="toggle"><input type="checkbox" id="v-logo" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Logo circles<small>Top left header logo</small></div>
       </div>
     </div>
     <div class="card">
       <div class="card-header"><h3>Navigation Menu</h3></div>
       <div class="toggle-row">
-        <div class="toggle-label">+Menu label<small>Section heading</small></div>
         <label class="toggle"><input type="checkbox" id="v-menu-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">+Menu label<small>Section heading</small></div>
+        <input type="text" class="toggle-text-input" id="v-menu-title-text" placeholder="+Menu" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">Work<small>Nav link 1</small></div>
         <label class="toggle"><input type="checkbox" id="v-nav1" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Work<small>Nav link 1</small></div>
+        <input type="text" class="toggle-text-input" id="v-nav1-text" placeholder="Work" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">About<small>Nav link 2</small></div>
         <label class="toggle"><input type="checkbox" id="v-nav2" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">About<small>Nav link 2</small></div>
+        <input type="text" class="toggle-text-input" id="v-nav2-text" placeholder="About" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">Services<small>Nav link 3</small></div>
         <label class="toggle"><input type="checkbox" id="v-nav3" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Services<small>Nav link 3</small></div>
+        <input type="text" class="toggle-text-input" id="v-nav3-text" placeholder="Services" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">Contact<small>Nav link 4</small></div>
         <label class="toggle"><input type="checkbox" id="v-nav4" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Contact<small>Nav link 4</small></div>
+        <input type="text" class="toggle-text-input" id="v-nav4-text" placeholder="Contact" oninput="markUnsaved()"/>
       </div>
     </div>
     <div class="card">
       <div class="card-header"><h3>Studio Section</h3></div>
       <div class="toggle-row">
-        <div class="toggle-label">+Studio label<small>Section heading</small></div>
         <label class="toggle"><input type="checkbox" id="v-studio-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">+Studio label<small>Section heading</small></div>
+        <input type="text" class="toggle-text-input" id="v-studio-title-text" placeholder="+Studio" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">City<small>Location line 1</small></div>
         <label class="toggle"><input type="checkbox" id="v-city" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">City<small>Location line 1</small></div>
+        <input type="text" class="toggle-text-input" id="v-city-text" placeholder="Los Angeles" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">State / Region<small>Location line 2</small></div>
         <label class="toggle"><input type="checkbox" id="v-state" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">State / Region<small>Location line 2</small></div>
+        <input type="text" class="toggle-text-input" id="v-state-text" placeholder="California" oninput="markUnsaved()"/>
       </div>
     </div>
     <div class="card">
       <div class="card-header"><h3>Connect Section</h3></div>
       <div class="toggle-row">
-        <div class="toggle-label">+Connect label<small>Section heading</small></div>
         <label class="toggle"><input type="checkbox" id="v-connect-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">+Connect label<small>Section heading</small></div>
+        <input type="text" class="toggle-text-input" id="v-connect-title-text" placeholder="+Connect" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">Email address<small>Contact link</small></div>
         <label class="toggle"><input type="checkbox" id="v-email" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Email address<small>Contact link</small></div>
+        <input type="text" class="toggle-text-input" id="v-email-text" placeholder="hi@filip.fyi" oninput="markUnsaved()"/>
       </div>
     </div>
     <div class="card">
       <div class="card-header"><h3>Follow Section</h3></div>
       <div class="toggle-row">
-        <div class="toggle-label">+Follow label<small>Section heading</small></div>
         <label class="toggle"><input type="checkbox" id="v-follow-title" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">+Follow label<small>Section heading</small></div>
+        <input type="text" class="toggle-text-input" id="v-follow-title-text" placeholder="+Follow" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">Instagram<small>Social link</small></div>
         <label class="toggle"><input type="checkbox" id="v-instagram" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Instagram<small>Social link</small></div>
+        <input type="text" class="toggle-text-input" id="v-instagram-text" placeholder="Instagram" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">Twitter / X<small>Social link</small></div>
         <label class="toggle"><input type="checkbox" id="v-twitter" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Twitter / X<small>Social link</small></div>
+        <input type="text" class="toggle-text-input" id="v-twitter-text" placeholder="Twitter" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">LinkedIn<small>Social link</small></div>
         <label class="toggle"><input type="checkbox" id="v-linkedin" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">LinkedIn<small>Social link</small></div>
+        <input type="text" class="toggle-text-input" id="v-linkedin-text" placeholder="LinkedIn" oninput="markUnsaved()"/>
       </div>
     </div>
     <div class="card">
       <div class="card-header"><h3>Footer</h3></div>
       <div class="toggle-row">
-        <div class="toggle-label">Tagline<small>Footer line 1</small></div>
         <label class="toggle"><input type="checkbox" id="v-tagline" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Tagline<small>Footer line 1</small></div>
+        <input type="text" class="toggle-text-input" id="v-tagline-text" placeholder="Est. 2025 • Summer Days" oninput="markUnsaved()"/>
       </div>
       <div class="toggle-row">
-        <div class="toggle-label">Coordinates<small>Footer line 2</small></div>
         <label class="toggle"><input type="checkbox" id="v-coords" checked onchange="markUnsaved()"><span class="toggle-slider"></span></label>
+        <div class="toggle-label">Coordinates<small>Footer line 2</small></div>
+        <input type="text" class="toggle-text-input" id="v-coords-text" placeholder="34.0522° N, 118.2437° W" oninput="markUnsaved()"/>
       </div>
     </div>
   </div>
@@ -723,12 +747,23 @@
     social: { email:"hi@filip.fyi", instagram:"filipz__", twitter:"filipz", linkedin:"filipzrnzevic" },
     grid: { cols:5, rows:4, itemSize:320 },
     visibility: {
-      logo:true, "menu-title":true,
-      nav1:true, nav2:true, nav3:true, nav4:true,
-      "studio-title":true, city:true, state:true,
-      "connect-title":true, email:true,
-      "follow-title":true, instagram:true, twitter:true, linkedin:true,
-      tagline:true, coords:true
+      logo:true,
+      "menu-title":true, "menu-title-text":"+Menu",
+      nav1:true, "nav1-text":"Work",
+      nav2:true, "nav2-text":"About",
+      nav3:true, "nav3-text":"Services",
+      nav4:true, "nav4-text":"Contact",
+      "studio-title":true, "studio-title-text":"+Studio",
+      city:true, "city-text":"Los Angeles",
+      state:true, "state-text":"California",
+      "connect-title":true, "connect-title-text":"+Connect",
+      email:true, "email-text":"hi@filip.fyi",
+      "follow-title":true, "follow-title-text":"+Follow",
+      instagram:true, "instagram-text":"Instagram",
+      twitter:true, "twitter-text":"Twitter",
+      linkedin:true, "linkedin-text":"LinkedIn",
+      tagline:true, "tagline-text":"Est. 2025 • Summer Days",
+      coords:true, "coords-text":"34.0522° N, 118.2437° W"
     }
   };
 
@@ -792,6 +827,12 @@
       const el = document.getElementById("v-"+k);
       if (el) el.checked = (v[k] !== undefined) ? v[k] : true;
     });
+    // visibility text inputs
+    const vTextKeys = ["menu-title","nav1","nav2","nav3","nav4","studio-title","city","state","connect-title","email","follow-title","instagram","twitter","linkedin","tagline","coords"];
+    vTextKeys.forEach(k => {
+      const el = document.getElementById("v-"+k+"-text");
+      if (el) el.value = (v[k+"-text"] !== undefined) ? v[k+"-text"] : "";
+    });
   }
 
   // ── Collect form fields ──
@@ -831,6 +872,12 @@
     vKeys.forEach(k => {
       const el = document.getElementById("v-"+k);
       if (el) data.visibility[k] = el.checked;
+    });
+    // collect visibility text inputs
+    const vTextKeys = ["menu-title","nav1","nav2","nav3","nav4","studio-title","city","state","connect-title","email","follow-title","instagram","twitter","linkedin","tagline","coords"];
+    vTextKeys.forEach(k => {
+      const el = document.getElementById("v-"+k+"-text");
+      if (el) data.visibility[k+"-text"] = el.value;
     });
   }
 
