@@ -393,14 +393,14 @@
         this.customEase = CustomEase.create("smooth", ".87,0,.13,1");
         this.centerEase = CustomEase.create("center", ".25,.46,.45,.94");
 
-        this.config = { itemSize:320, baseGap:16, rows:4, cols:5, currentZoom:0.6, currentGap:32 };
+        this.config = { itemSize:320, baseGap:16, rows:5, cols:8, currentZoom:0.6, currentGap:32 };
 
         // Override grid config from admin panel if saved
         try {
           const stored = JSON.parse(localStorage.getItem("portfolio_content"));
           if (stored && stored.grid) {
-            this.config.cols     = stored.grid.cols     || 5;
-            this.config.rows     = stored.grid.rows     || 4;
+            this.config.cols     = stored.grid.cols     || 8;
+            this.config.rows     = stored.grid.rows     || 5;
             this.config.itemSize = stored.grid.itemSize || 320;
           }
         } catch(e) {}
@@ -593,21 +593,18 @@
         this.canvasWrapper.style.height = this.gridDimensions.height+"px";
         this.gridContainer.innerHTML = ""; this.gridItems = [];
         let idx = 0;
-        const totalImages = this.fashionImages.length; // no repeat — stop at image count
         for (let row=0; row<this.config.rows; row++) {
           for (let col=0; col<this.config.cols; col++) {
-            if (idx >= totalImages) break; // stop when all images used
             const item = document.createElement("div"); item.className="grid-item";
             const x = col*(this.config.itemSize+this.config.currentGap);
             const y = row*(this.config.itemSize+this.config.currentGap);
             item.style.left=`${x}px`; item.style.top=`${y}px`; item.style.opacity="0";
-            const url = this.fashionImages[idx];
-            const img = document.createElement("img"); img.src=url; img.alt=`Portrait ${idx+1}`;
+            const url = this.fashionImages[idx%this.fashionImages.length]; idx++;
+            const img = document.createElement("img"); img.src=url; img.alt=`Fashion Portrait ${idx}`;
             item.appendChild(img);
-            const data = { element:item, img, row, col, baseX:x, baseY:y, imageUrl:url, index:idx };
+            const data = { element:item, img, row, col, baseX:x, baseY:y, imageUrl:url, index:this.gridItems.length };
             item.addEventListener("click",()=>{ if(!this.zoomState.isActive){ this.soundSystem.play("click"); this.enterZoomMode(data); } });
             this.gridContainer.appendChild(item); this.gridItems.push(data);
-            idx++;
           }
         }
       }
