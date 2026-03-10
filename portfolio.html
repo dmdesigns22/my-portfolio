@@ -497,6 +497,24 @@
           description: img.description || ""
         }));
 
+        // ── Apply logo settings ──
+        const lg = (stored && stored.logo) ? stored.logo : null;
+        if (lg && lg.type === "image" && lg.url) {
+          const logoCircles = document.querySelector(".logo-circles");
+          if (logoCircles) logoCircles.style.display = "none";
+          const logoContainer = document.querySelector(".logo-container");
+          if (logoContainer) {
+            const imgEl = document.createElement("img");
+            imgEl.src = lg.url;
+            imgEl.alt = "Logo";
+            imgEl.style.cssText = `width:${lg.width||120}px;height:${lg.height||40}px;object-fit:contain;display:block;`;
+            const pos = lg.position || "left";
+            if (pos === "center") { logoContainer.style.display = "flex"; logoContainer.style.justifyContent = "center"; }
+            else if (pos === "right") { logoContainer.style.display = "flex"; logoContainer.style.justifyContent = "flex-end"; }
+            logoContainer.appendChild(imgEl);
+          }
+        }
+
         // ── Apply visibility toggles ──
         const v = (stored && stored.visibility) ? stored.visibility : {};
         const hide = (el) => { if(el) el.style.display = "none"; };

@@ -325,6 +325,47 @@
     .toggle input:checked + .toggle-slider { background:rgba(74,222,128,.25); }
     .toggle input:checked + .toggle-slider::before { background:var(--green); transform:translateX(18px); }
 
+    /* ── Logo section ── */
+    .logo-option-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+    .logo-option-card {
+      border:1px solid var(--border); border-radius:6px; padding:1rem;
+      cursor:pointer; transition:all .2s ease; position:relative;
+    }
+    .logo-option-card:hover { border-color:#444; }
+    .logo-option-card.selected { border-color:#fff; background:var(--accent-dim); }
+    .logo-option-card input[type="radio"] { position:absolute; opacity:0; width:0; height:0; }
+    .logo-option-card .option-indicator {
+      width:10px; height:10px; border-radius:50%; border:1px solid #555;
+      display:inline-block; margin-right:.5rem; vertical-align:middle; transition:all .2s;
+    }
+    .logo-option-card.selected .option-indicator { background:#fff; border-color:#fff; }
+    .logo-option-title { font-size:13px; font-weight:600; }
+    .logo-option-desc { font-size:11px; color:var(--text-dim); margin-top:.25rem; font-family:"TheGoodMonolith",monospace; text-transform:uppercase; letter-spacing:.05em; }
+    .logo-option-preview { margin-top:.75rem; }
+    .logo-circles-demo { display:flex; align-items:center; gap:0; }
+    .logo-circles-demo .dc {
+      width:14px; height:14px; border-radius:50%; background:#fff;
+    }
+    .logo-circles-demo .dc:last-child { margin-left:-6px; mix-blend-mode:exclusion; }
+    .logo-img-preview-box {
+      width:100%; height:60px; border:1px dashed var(--border); border-radius:4px;
+      display:flex; align-items:center; justify-content:center;
+      background:var(--bg); margin-top:.75rem; overflow:hidden;
+    }
+    .logo-img-preview-box img { max-width:100%; max-height:100%; object-fit:contain; }
+    .logo-img-preview-box span { font-size:11px; color:var(--text-dim); font-family:"TheGoodMonolith",monospace; text-transform:uppercase; letter-spacing:.05em; }
+    .logo-pos-group { display:flex; gap:.5rem; }
+    .logo-pos-btn {
+      flex:1; padding:.5rem; border:1px solid var(--border); border-radius:4px;
+      background:transparent; color:var(--text-dim); font-size:11px;
+      font-family:"TheGoodMonolith",monospace; text-transform:uppercase; letter-spacing:.05em;
+      cursor:pointer; transition:all .2s ease;
+    }
+    .logo-pos-btn:hover { border-color:#444; color:var(--text); }
+    .logo-pos-btn.active { border-color:#fff; color:#fff; background:var(--accent-dim); }
+    .custom-logo-fields { display:none; }
+    .custom-logo-fields.visible { display:block; }
+
     .toggle-group-title {
       font-family:"TheGoodMonolith",monospace; font-size:10px;
       text-transform:uppercase; letter-spacing:.1em; color:var(--text-dim);
@@ -346,6 +387,10 @@
     <a class="nav-item active" data-section="dashboard">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       Dashboard
+    </a>
+    <a class="nav-item" data-section="logo">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="6" rx="1"/><path d="M3 12h4l3 7 4-14 3 7h4"/></svg>
+      Logo
     </a>
     <a class="nav-item" data-section="images">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -435,6 +480,65 @@
         <div style="display:flex;gap:1rem;align-items:flex-start;">
           <div style="font-family:'TheGoodMonolith',monospace;font-size:11px;color:var(--text-dim);padding-top:2px;min-width:24px;">03</div>
           <div><div style="font-size:13px;font-weight:600;margin-bottom:.25rem;">Save & preview</div><div style="font-size:12px;color:var(--text-dim);">Hit "Save All Changes" then open your portfolio — it reads your content automatically.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGO -->
+  <div class="section" id="section-logo">
+    <div class="section-header">
+      <h2>Logo</h2>
+      <p>Choose between the default animated circles or upload a custom image logo.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Logo Type</h3></div>
+      <div class="logo-option-row">
+        <label class="logo-option-card selected" id="logo-opt-circles" onclick="selectLogoType('circles')">
+          <input type="radio" name="logoType" value="circles" checked/>
+          <div><span class="option-indicator"></span><span class="logo-option-title">Default Circles</span></div>
+          <div class="logo-option-desc">Original animated logo</div>
+          <div class="logo-option-preview">
+            <div class="logo-circles-demo"><div class="dc"></div><div class="dc"></div></div>
+          </div>
+        </label>
+        <label class="logo-option-card" id="logo-opt-image" onclick="selectLogoType('image')">
+          <input type="radio" name="logoType" value="image"/>
+          <div><span class="option-indicator"></span><span class="logo-option-title">Custom Image</span></div>
+          <div class="logo-option-desc">Paste any image URL</div>
+          <div class="logo-img-preview-box" id="logoTypePreviewBox">
+            <span>No image</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="card custom-logo-fields" id="customLogoFields">
+      <div class="card-header"><h3>Image Settings</h3></div>
+      <div class="field">
+        <label>Image URL</label>
+        <input type="url" id="logo-url" placeholder="https://your-logo.png" oninput="updateLogoPreview();markUnsaved()"/>
+      </div>
+      <div class="logo-img-preview-box" id="logoPreviewBox" style="height:80px;margin-bottom:1.25rem;">
+        <span>Enter a URL above to preview</span>
+      </div>
+      <div class="field-row" style="max-width:50%">
+        <div class="field">
+          <label>Width (px)</label>
+          <input type="number" id="logo-width" value="120" min="20" max="400" oninput="markUnsaved()"/>
+        </div>
+        <div class="field">
+          <label>Height (px)</label>
+          <input type="number" id="logo-height" value="40" min="10" max="200" oninput="markUnsaved()"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Position</label>
+        <div class="logo-pos-group" id="logoPosGroup">
+          <button class="logo-pos-btn active" data-pos="left"   onclick="selectLogoPos('left')">Left</button>
+          <button class="logo-pos-btn"        data-pos="center" onclick="selectLogoPos('center')">Center</button>
+          <button class="logo-pos-btn"        data-pos="right"  onclick="selectLogoPos('right')">Right</button>
         </div>
       </div>
     </div>
@@ -746,6 +850,7 @@
     branding: { city:"Los Angeles", state:"California", tagline:"Est. 2025 • Summer Days", coords:"34.0522° N, 118.2437° W", nav1:"Work", nav2:"About", nav3:"Services", nav4:"Contact" },
     social: { email:"hi@filip.fyi", instagram:"filipz__", twitter:"filipz", linkedin:"filipzrnzevic" },
     grid: { cols:5, rows:4, itemSize:320 },
+    logo: { type:"circles", url:"", width:120, height:40, position:"left" },
     visibility: {
       logo:true,
       "menu-title":true, "menu-title-text":"+Menu",
@@ -804,6 +909,14 @@
   // ── Populate form fields ──
   function populateFields() {
     const b = data.branding, s = data.social, g = data.grid || {cols:5,rows:4,itemSize:320};
+    // logo
+    const lg = data.logo || { type:"circles", url:"", width:120, height:40, position:"left" };
+    selectLogoType(lg.type, true);
+    document.getElementById("logo-url").value    = lg.url      || "";
+    document.getElementById("logo-width").value  = lg.width    || 120;
+    document.getElementById("logo-height").value = lg.height   || 40;
+    selectLogoPos(lg.position || "left", true);
+    updateLogoPreview();
     document.getElementById("b-city").value    = b.city    || "";
     document.getElementById("b-state").value   = b.state   || "";
     document.getElementById("b-tagline").value = b.tagline || "";
@@ -837,6 +950,15 @@
 
   // ── Collect form fields ──
   function collectFields() {
+    const selLogoType = document.querySelector('input[name="logoType"]:checked');
+    const selLogoPos  = document.querySelector('.logo-pos-btn.active');
+    data.logo = {
+      type:     selLogoType ? selLogoType.value : "circles",
+      url:      document.getElementById("logo-url").value.trim(),
+      width:    parseInt(document.getElementById("logo-width").value)  || 120,
+      height:   parseInt(document.getElementById("logo-height").value) || 40,
+      position: selLogoPos  ? selLogoPos.dataset.pos : "left",
+    };
     data.grid = {
       cols:     parseInt(document.getElementById("g-cols").value) || 5,
       rows:     parseInt(document.getElementById("g-rows").value) || 4,
@@ -1034,6 +1156,43 @@
     updateGridPreview();
     markUnsaved();
     showToast(`Preset applied: ${cols}×${rows} (${cols*rows} images)`);
+  }
+
+  // ── Logo helpers ──
+  function selectLogoType(type, silent) {
+    const circlesCard = document.getElementById("logo-opt-circles");
+    const imageCard   = document.getElementById("logo-opt-image");
+    const fields      = document.getElementById("customLogoFields");
+    const circlesInput = circlesCard.querySelector("input");
+    const imageInput   = imageCard.querySelector("input");
+    if (type === "image") {
+      circlesCard.classList.remove("selected"); imageCard.classList.add("selected");
+      circlesInput.checked = false; imageInput.checked = true;
+      fields.classList.add("visible");
+    } else {
+      imageCard.classList.remove("selected"); circlesCard.classList.add("selected");
+      imageInput.checked = false; circlesInput.checked = true;
+      fields.classList.remove("visible");
+    }
+    if (!silent) markUnsaved();
+  }
+
+  function selectLogoPos(pos, silent) {
+    document.querySelectorAll(".logo-pos-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.pos === pos);
+    });
+    if (!silent) markUnsaved();
+  }
+
+  function updateLogoPreview() {
+    const url = document.getElementById("logo-url").value.trim();
+    // Update both preview boxes
+    [document.getElementById("logoPreviewBox"), document.getElementById("logoTypePreviewBox")].forEach(box => {
+      if (!box) return;
+      box.innerHTML = url
+        ? `<img src="${url}" alt="Logo preview" onerror="this.parentNode.innerHTML='<span>Could not load image</span>'">`
+        : `<span>${box.id === "logoPreviewBox" ? "Enter a URL above to preview" : "No image"}</span>`;
+    });
   }
 
   // ── Grid preview ──
