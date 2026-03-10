@@ -215,12 +215,130 @@
       mix-blend-mode: overlay;
       background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 20%, transparent 40%);
     }
+
+    /* ── Mobile Header ── */
+    .mobile-header {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw;
+      padding: 1.25rem 1.5rem; z-index: 10001;
+      align-items: center; justify-content: space-between;
+      pointer-events: auto; opacity: 0;
+    }
+    .mobile-hamburger {
+      background: none; border: none; cursor: pointer;
+      display: flex; flex-direction: column; gap: 5px;
+      padding: 8px; min-width: 44px; min-height: 44px;
+      align-items: center; justify-content: center;
+    }
+    .mobile-hamburger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; }
+
+    /* ── Mobile Menu ── */
+    .mobile-menu {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.97); z-index: 10002;
+      display: flex; flex-direction: column;
+      padding: 5rem 2rem 2rem; overflow-y: auto;
+      transform: translateY(-100%); transition: transform .4s cubic-bezier(.25,.46,.45,.94);
+      pointer-events: none;
+    }
+    .mobile-menu.open { transform: translateY(0); pointer-events: all; }
+    .mobile-menu-close {
+      position: absolute; top: 1.25rem; right: 1.5rem;
+      background: none; border: none; cursor: pointer;
+      width: 44px; height: 44px; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .mobile-menu-section { margin-bottom: 2rem; }
+    .mobile-menu-section h3 {
+      font-size: 11px; font-family: "TheGoodMonolith", monospace;
+      text-transform: uppercase; letter-spacing: .1em;
+      color: rgba(255,255,255,0.4); margin-bottom: .75rem; font-weight: 400;
+    }
+    .mobile-menu-section a,
+    .mobile-menu-section p {
+      font-size: 22px; font-weight: 600; display: block;
+      margin-bottom: .5rem; color: #fff; text-decoration: none;
+    }
+    .mobile-menu-section a::after { display: none; }
+    .mobile-menu-section a:hover { color: #fff; mix-blend-mode: normal; }
+
+    /* ── Mobile Responsive ── */
+    @media (max-width: 768px) {
+      .header, .footer { display: none !important; }
+      .mobile-header { display: flex; }
+
+      .controls-container {
+        bottom: 1rem; left: 50% !important; right: auto;
+        transform: translateX(-50%) !important;
+        max-width: calc(100vw - 2rem);
+      }
+      .controls-container.split-mode { left: 50% !important; }
+      .switch { gap: .75em; overflow-x: auto; }
+      .switch-button { min-height: 44px; padding: 5px 10px; font-size: 0.68em; }
+      .percentage-indicator { min-height: 44px; padding: 0.5em 0.875em; font-size: 0.68em; }
+      .sound-toggle { min-height: 44px; }
+
+      .image-title-overlay { left: 1.25rem; right: 1.25rem; bottom: 90px; width: auto; }
+      .image-slide-number, .image-slide-title, .image-slide-description { width: 100%; }
+      .image-slide-title { height: 40px; }
+      .image-slide-title h1 { font-size: 28px; }
+      .image-slide-description { min-height: 60px; }
+
+      .close-button { top: 1rem; right: 1rem; transform: none !important; width: 80px; height: 80px; }
+      .close-button svg { width: 40px; height: 40px; }
+
+      .split-screen-container { flex-direction: column; }
+      .split-left, .split-right { width: 100vw; height: 50vh; }
+
+      .footer .info-section { text-align: center; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Preloader -->
   <div id="preloader-overlay"></div>
+
+  <!-- Mobile Header -->
+  <div class="mobile-header" id="mobileHeader">
+    <div class="logo-container" style="margin-bottom:0;width:3rem;height:1.5rem;">
+      <div class="logo-circles">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+      </div>
+    </div>
+    <button class="mobile-hamburger" onclick="toggleMobileMenu()" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Close menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="mobile-menu-section">
+      <h3 id="m-menu-title">+Menu</h3>
+      <a id="m-nav1" href="#">Work</a>
+      <a id="m-nav2" href="#">About</a>
+      <a id="m-nav3" href="#">Services</a>
+      <a id="m-nav4" href="#">Contact</a>
+    </div>
+    <div class="mobile-menu-section">
+      <h3 id="m-studio-title">+Studio</h3>
+      <p id="m-city">Los Angeles</p>
+      <p id="m-state">California</p>
+    </div>
+    <div class="mobile-menu-section">
+      <h3 id="m-connect-title">+Connect</h3>
+      <a id="m-email" href="mailto:hi@filip.fyi">hi@filip.fyi</a>
+    </div>
+    <div class="mobile-menu-section">
+      <h3 id="m-follow-title">+Follow</h3>
+      <a id="m-instagram" href="https://instagram.com/filipz__">Instagram</a>
+      <a id="m-twitter" href="https://x.com/filipz">Twitter</a>
+      <a id="m-linkedin" href="https://linkedin.com/in/filipzrnzevic">LinkedIn</a>
+    </div>
+  </div>
 
   <!-- Header -->
   <div class="header">
@@ -576,6 +694,17 @@
         if(s.twitter   && socialLinks[1]) socialLinks[1].href = `https://x.com/${s.twitter}`;
         if(s.linkedin  && socialLinks[2]) socialLinks[2].href = `https://linkedin.com/in/${s.linkedin}`;
 
+        // ── Sync mobile menu content from branding/social ──
+        const setMob = (id, txt) => { const el=document.getElementById(id); if(el&&txt) el.textContent=txt; };
+        const setMobHref = (id, href) => { const el=document.getElementById(id); if(el&&href) el.href=href; };
+        setMob("m-city",   b.city);   setMob("m-state",   b.state);
+        setMob("m-nav1",   b.nav1);   setMob("m-nav2",   b.nav2);
+        setMob("m-nav3",   b.nav3);   setMob("m-nav4",   b.nav4);
+        if (s.email) { setMob("m-email", s.email); setMobHref("m-email", `mailto:${s.email}`); }
+        if (s.instagram) setMobHref("m-instagram", `https://instagram.com/${s.instagram}`);
+        if (s.twitter)   setMobHref("m-twitter",   `https://x.com/${s.twitter}`);
+        if (s.linkedin)  setMobHref("m-linkedin",  `https://linkedin.com/in/${s.linkedin}`);
+
         // Apply custom text from visibility panel (overrides branding defaults)
         const applyVText = (key, el) => { if (v[key+"-text"] && el) el.textContent = v[key+"-text"]; };
         applyVText("menu-title",    document.querySelector(".values-section h3"));
@@ -592,6 +721,18 @@
         applyVText("instagram", socialLisT[0]); applyVText("twitter", socialLisT[1]); applyVText("linkedin", socialLisT[2]);
         const footerPsT = document.querySelectorAll(".info-section p");
         applyVText("tagline", footerPsT[0]); applyVText("coords", footerPsT[1]);
+
+        // Also apply visibility text to mobile menu
+        const setMobTxt = (id, key) => { if (v[key+"-text"]) { const el=document.getElementById(id); if(el) el.textContent=v[key+"-text"]; } };
+        setMobTxt("m-menu-title",    "menu-title");
+        setMobTxt("m-nav1",          "nav1");       setMobTxt("m-nav2",    "nav2");
+        setMobTxt("m-nav3",          "nav3");       setMobTxt("m-nav4",    "nav4");
+        setMobTxt("m-studio-title",  "studio-title");
+        setMobTxt("m-city",          "city");       setMobTxt("m-state",   "state");
+        setMobTxt("m-connect-title", "connect-title");
+        setMobTxt("m-email",         "email");
+        setMobTxt("m-follow-title",  "follow-title");
+        setMobTxt("m-instagram",     "instagram");  setMobTxt("m-twitter", "twitter"); setMobTxt("m-linkedin", "linkedin");
       }
 
       splitTextIntoLines(element, text) {
@@ -884,7 +1025,7 @@
         gsap.to(this.viewport,{duration:0.6,opacity:1,ease:"power2.inOut",
           onComplete:()=>{
             this.playIntroAnimation();
-            gsap.to(".header",{duration:1.2,opacity:1,ease:"power2.out",delay:0.8});
+            gsap.to(".header, .mobile-header",{duration:1.2,opacity:1,ease:"power2.out",delay:0.8});
             gsap.to(".footer",{duration:1.4,opacity:1,ease:"power2.out",delay:1.0});
             setTimeout(()=>{ this.initDraggable(); this.setupViewportObserver(); },1500);
           }
@@ -905,6 +1046,11 @@
           else if(e.key==="f"||e.key==="F")this.autoFitZoom();
         });
       }
+    }
+
+    /* Mobile Menu */
+    function toggleMobileMenu() {
+      document.getElementById("mobileMenu").classList.toggle("open");
     }
 
     /* Boot */
