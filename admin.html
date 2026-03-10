@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio Admin</title>
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/thegoodmonolith"/>
+  <style>
+    @font-face {
+      font-family: "PPNeueMontreal";
+      src: url("https://assets.codepen.io/7558/PPNeueMontreal-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #1a1a1a;
+      --border: #222222;
+      --accent: #ffffff;
+      --accent-dim: rgba(255,255,255,0.06);
+      --text: #ffffff;
+      --text-dim: rgba(255,255,255,0.4);
+      --text-mid: rgba(255,255,255,0.7);
+      --green: #4ade80;
+      --red: #f87171;
+      --yellow: #fbbf24;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: "PPNeueMontreal", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed; top:0; left:0; width:240px; height:100vh;
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; z-index: 100; padding: 0;
+    }
+    .sidebar-logo {
+      padding: 2rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo .circles { display:flex; align-items:center; gap:0; margin-bottom:.75rem; }
+    .sidebar-logo .c {
+      width:14px; height:14px; border-radius:50%; background:#fff;
+      transition: transform .3s ease;
+    }
+    .sidebar-logo .c:last-child { margin-left:-6px; mix-blend-mode:exclusion; }
+    .sidebar-logo:hover .c:first-child { transform: translateX(-4px); }
+    .sidebar-logo:hover .c:last-child  { transform: translateX(4px); }
+    .sidebar-logo p {
+      font-family: "TheGoodMonolith", monospace;
+      font-size: 10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.1em;
+    }
+    .sidebar-logo h2 { font-size:14px; font-weight:600; letter-spacing:-.01em; }
+
+    .nav-items { flex:1; padding:1rem 0; overflow-y:auto; }
+    .nav-item {
+      display:flex; align-items:center; gap:.75rem;
+      padding:.75rem 1.5rem; cursor:pointer;
+      font-size:13px; font-weight:500; color:var(--text-dim);
+      transition: all .2s ease; border-left:2px solid transparent;
+      text-decoration:none;
+    }
+    .nav-item:hover { color:var(--text); background:var(--accent-dim); }
+    .nav-item.active { color:var(--text); border-left-color:var(--text); background:var(--accent-dim); }
+    .nav-item .icon { width:16px; height:16px; opacity:.6; }
+    .nav-item.active .icon { opacity:1; }
+
+    .sidebar-footer {
+      padding:1.25rem 1.5rem; border-top:1px solid var(--border);
+      display:flex; flex-direction:column; gap:.5rem;
+    }
+    .btn-preview {
+      display:flex; align-items:center; justify-content:center; gap:.5rem;
+      padding:.625rem 1rem; border:1px solid var(--border);
+      border-radius:4px; font-size:12px; font-weight:600;
+      font-family:"TheGoodMonolith",monospace; text-transform:uppercase;
+      letter-spacing:.05em; cursor:pointer; transition:all .2s ease;
+      background:transparent; color:var(--text); text-decoration:none;
+    }
+    .btn-preview:hover { background:var(--accent-dim); border-color:#444; }
+    .save-status {
+      font-family:"TheGoodMonolith",monospace; font-size:10px;
+      text-transform:uppercase; letter-spacing:.08em;
+      color:var(--text-dim); text-align:center;
+      transition:color .3s ease;
+    }
+    .save-status.saved { color:var(--green); }
+    .save-status.unsaved { color:var(--yellow); }
+
+    /* ── Main ── */
+    .main { margin-left:240px; min-height:100vh; }
+
+    .topbar {
+      position:sticky; top:0; z-index:50;
+      background:rgba(10,10,10,0.9); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between;
+    }
+    .topbar h1 { font-size:16px; font-weight:600; letter-spacing:-.02em; }
+    .topbar-actions { display:flex; gap:.75rem; align-items:center; }
+
+    .btn {
+      padding:.5rem 1.25rem; border-radius:4px; font-size:12px; font-weight:600;
+      font-family:"TheGoodMonolith",monospace; text-transform:uppercase;
+      letter-spacing:.05em; cursor:pointer; transition:all .2s ease; border:none;
+    }
+    .btn-primary { background:#fff; color:#000; }
+    .btn-primary:hover { background:#e0e0e0; }
+    .btn-danger { background:transparent; color:var(--red); border:1px solid var(--red); }
+    .btn-danger:hover { background:rgba(248,113,113,.1); }
+    .btn-ghost { background:transparent; color:var(--text-dim); border:1px solid var(--border); }
+    .btn-ghost:hover { color:var(--text); border-color:#444; }
+
+    /* ── Sections ── */
+    .section { display:none; padding:2rem; }
+    .section.active { display:block; }
+
+    .section-header { margin-bottom:2rem; }
+    .section-header h2 { font-size:24px; font-weight:500; letter-spacing:-.03em; margin-bottom:.5rem; }
+    .section-header p { font-size:13px; color:var(--text-dim); }
+
+    /* ── Cards ── */
+    .card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:8px; padding:1.5rem; margin-bottom:1.5rem;
+    }
+    .card-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--border);
+    }
+    .card-header h3 { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); }
+
+    /* ── Form fields ── */
+    .field { margin-bottom:1.25rem; }
+    .field:last-child { margin-bottom:0; }
+    .field label {
+      display:block; font-size:11px; font-weight:600;
+      text-transform:uppercase; letter-spacing:.08em;
+      color:var(--text-dim); margin-bottom:.5rem;
+      font-family:"TheGoodMonolith",monospace;
+    }
+    .field input, .field textarea {
+      width:100%; background:var(--bg); border:1px solid var(--border);
+      border-radius:4px; padding:.625rem .875rem; font-size:13px;
+      font-family:"PPNeueMontreal",sans-serif; color:var(--text);
+      outline:none; transition:border-color .2s ease; resize:vertical;
+    }
+    .field input:focus, .field textarea:focus { border-color:#444; }
+    .field input::placeholder, .field textarea::placeholder { color:var(--text-dim); }
+
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .field-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+
+    /* ── Images Grid ── */
+    .images-toolbar {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:1.5rem;
+    }
+    .images-count {
+      font-family:"TheGoodMonolith",monospace; font-size:11px;
+      text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim);
+    }
+
+    .images-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem;
+    }
+
+    .image-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:6px; overflow:hidden; transition:border-color .2s ease;
+      position:relative;
+    }
+    .image-card:hover { border-color:#444; }
+    .image-card:hover .image-actions { opacity:1; }
+
+    .image-thumb {
+      width:100%; aspect-ratio:1; object-fit:cover; display:block;
+      background:var(--surface2);
+    }
+    .image-thumb-placeholder {
+      width:100%; aspect-ratio:1; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:.5rem;
+      background:var(--surface2); color:var(--text-dim);
+      font-size:11px; font-family:"TheGoodMonolith",monospace;
+      text-transform:uppercase; letter-spacing:.05em;
+    }
+    .image-thumb-placeholder svg { width:24px; height:24px; opacity:.3; }
+
+    .image-card-body { padding:.75rem; }
+    .image-card-body input {
+      width:100%; background:transparent; border:none; border-bottom:1px solid var(--border);
+      padding:.25rem 0; font-size:12px; font-family:"PPNeueMontreal",sans-serif;
+      color:var(--text); outline:none; margin-bottom:.5rem;
+    }
+    .image-card-body input:focus { border-bottom-color:#555; }
+    .image-card-body textarea {
+      width:100%; background:transparent; border:none; border-bottom:1px solid var(--border);
+      padding:.25rem 0; font-size:11px; font-family:"PPNeueMontreal",sans-serif;
+      color:var(--text-mid); outline:none; resize:none; line-height:1.4;
+    }
+    .image-card-body textarea:focus { border-bottom-color:#555; }
+    .image-card-num {
+      font-family:"TheGoodMonolith",monospace; font-size:10px;
+      color:var(--text-dim); margin-bottom:.5rem;
+    }
+
+    .image-actions {
+      position:absolute; top:.5rem; right:.5rem;
+      display:flex; gap:.25rem; opacity:0; transition:opacity .2s ease;
+    }
+    .img-action-btn {
+      width:28px; height:28px; border-radius:4px; border:none;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:all .2s ease; backdrop-filter:blur(4px);
+    }
+    .img-action-btn.delete { background:rgba(248,113,113,.15); color:var(--red); }
+    .img-action-btn.delete:hover { background:rgba(248,113,113,.3); }
+    .img-action-btn.move-url { background:rgba(255,255,255,.1); color:var(--text); }
+    .img-action-btn.move-url:hover { background:rgba(255,255,255,.2); }
+
+    /* ── Add image area ── */
+    .add-image-area {
+      border:2px dashed var(--border); border-radius:8px;
+      padding:2rem; text-align:center; cursor:pointer;
+      transition:all .2s ease; margin-bottom:1.5rem;
+    }
+    .add-image-area:hover { border-color:#444; background:var(--accent-dim); }
+    .add-image-area h3 { font-size:14px; font-weight:500; margin-bottom:.5rem; }
+    .add-image-area p { font-size:12px; color:var(--text-dim); }
+
+    .url-input-row {
+      display:flex; gap:.75rem; margin-bottom:1rem;
+    }
+    .url-input-row input {
+      flex:1; background:var(--bg); border:1px solid var(--border);
+      border-radius:4px; padding:.625rem .875rem; font-size:13px;
+      font-family:"PPNeueMontreal",sans-serif; color:var(--text); outline:none;
+      transition:border-color .2s ease;
+    }
+    .url-input-row input:focus { border-color:#444; }
+
+    /* ── Stats ── */
+    .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
+    .stat-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:8px; padding:1.25rem;
+    }
+    .stat-card .stat-label {
+      font-family:"TheGoodMonolith",monospace; font-size:10px;
+      text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:.5rem;
+    }
+    .stat-card .stat-value { font-size:28px; font-weight:500; letter-spacing:-.03em; }
+    .stat-card .stat-sub { font-size:11px; color:var(--text-dim); margin-top:.25rem; }
+
+    /* ── Toast ── */
+    .toast {
+      position:fixed; bottom:2rem; right:2rem;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:6px; padding:1rem 1.5rem;
+      font-size:13px; font-weight:500;
+      transform:translateY(100px); opacity:0;
+      transition:all .3s cubic-bezier(.34,1.56,.64,1);
+      z-index:9999; pointer-events:none;
+      display:flex; align-items:center; gap:.75rem;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast-dot { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+
+    /* ── Divider ── */
+    .divider { height:1px; background:var(--border); margin:1.5rem 0; }
+
+    .tag {
+      display:inline-flex; align-items:center;
+      padding:.2rem .6rem; border-radius:3px; font-size:11px;
+      font-family:"TheGoodMonolith",monospace; text-transform:uppercase; letter-spacing:.05em;
+    }
+    .tag-green { background:rgba(74,222,128,.1); color:var(--green); }
+    .tag-yellow { background:rgba(251,191,36,.1); color:var(--yellow); }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="circles"><div class="c"></div><div class="c"></div></div>
+    <p>Portfolio Admin</p>
+    <h2>Control Panel</h2>
+  </div>
+  <div class="nav-items">
+    <a class="nav-item active" data-section="dashboard">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" data-section="images">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Images
+    </a>
+    <a class="nav-item" data-section="branding">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      Branding
+    </a>
+    <a class="nav-item" data-section="social">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Social & Contact
+    </a>
+  </div>
+  <div class="sidebar-footer">
+    <a href="portfolio.html" target="_blank" class="btn-preview">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View Portfolio
+    </a>
+    <div class="save-status" id="saveStatus">All changes saved</div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="sectionTitle">Dashboard</h1>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="resetAll()">Reset Defaults</button>
+      <button class="btn btn-primary" onclick="saveAll()">Save All Changes</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="section-dashboard">
+    <div class="section-header">
+      <h2>Welcome back</h2>
+      <p>Manage your portfolio content from here. Changes are saved to browser storage and reflected live on your portfolio.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Images</div>
+        <div class="stat-value" id="stat-images">0</div>
+        <div class="stat-sub">in gallery grid</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">With Titles</div>
+        <div class="stat-value" id="stat-titled">0</div>
+        <div class="stat-sub">images have custom data</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Status</div>
+        <div class="stat-value" style="font-size:16px;padding-top:6px"><span class="tag tag-green" id="stat-status">Live</span></div>
+        <div class="stat-sub">portfolio is active</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Quick Actions</h3></div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="goTo('images')">+ Add Images</button>
+        <button class="btn btn-ghost" onclick="goTo('branding')">Edit Branding</button>
+        <button class="btn btn-ghost" onclick="goTo('social')">Update Contact</button>
+        <a href="portfolio.html" target="_blank" class="btn btn-ghost" style="text-decoration:none">Open Portfolio ↗</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>How it works</h3></div>
+      <div style="display:flex;flex-direction:column;gap:.875rem;">
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="font-family:'TheGoodMonolith',monospace;font-size:11px;color:var(--text-dim);padding-top:2px;min-width:24px;">01</div>
+          <div><div style="font-size:13px;font-weight:600;margin-bottom:.25rem;">Add your images</div><div style="font-size:12px;color:var(--text-dim);">Paste image URLs from Cloudinary, Imgur, or any host. Add a title and description for each.</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="font-family:'TheGoodMonolith',monospace;font-size:11px;color:var(--text-dim);padding-top:2px;min-width:24px;">02</div>
+          <div><div style="font-size:13px;font-weight:600;margin-bottom:.25rem;">Update your branding</div><div style="font-size:12px;color:var(--text-dim);">Set your name, location, email, and social links in the Branding & Social tabs.</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="font-family:'TheGoodMonolith',monospace;font-size:11px;color:var(--text-dim);padding-top:2px;min-width:24px;">03</div>
+          <div><div style="font-size:13px;font-weight:600;margin-bottom:.25rem;">Save & preview</div><div style="font-size:12px;color:var(--text-dim);">Hit "Save All Changes" then open your portfolio — it reads your content automatically.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGES -->
+  <div class="section" id="section-images">
+    <div class="section-header">
+      <h2>Images</h2>
+      <p>Add image URLs and set titles & descriptions. The gallery grid will use these images on repeat.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Add New Image</h3></div>
+      <div class="url-input-row">
+        <input type="url" id="newImageUrl" placeholder="https://res.cloudinary.com/your-image.jpg" />
+        <button class="btn btn-primary" onclick="addImage()">Add Image</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);">Tip: Use <strong style="color:var(--text-mid)">Cloudinary</strong> (free) to host and get direct image URLs. Supports JPG, PNG, WebP.</p>
+    </div>
+
+    <div class="images-toolbar">
+      <div class="images-count" id="imageCount">0 images</div>
+      <button class="btn btn-danger" onclick="clearImages()" style="font-size:11px;padding:.4rem .875rem;">Clear All</button>
+    </div>
+
+    <div class="images-grid" id="imagesGrid"></div>
+  </div>
+
+  <!-- BRANDING -->
+  <div class="section" id="section-branding">
+    <div class="section-header">
+      <h2>Branding</h2>
+      <p>Update your studio name, location, and footer text.</p>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Studio Info</h3></div>
+      <div class="field-row">
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="b-city" placeholder="Los Angeles"/>
+        </div>
+        <div class="field">
+          <label>State / Region</label>
+          <input type="text" id="b-state" placeholder="California"/>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Footer Tagline</label>
+          <input type="text" id="b-tagline" placeholder="Est. 2025 • Summer Days"/>
+        </div>
+        <div class="field">
+          <label>Coordinates</label>
+          <input type="text" id="b-coords" placeholder="34.0522° N, 118.2437° W"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Navigation Menu</h3></div>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:1rem;">Customize the menu link labels (URLs can be edited directly in portfolio.html).</p>
+      <div class="field-row-3">
+        <div class="field"><label>Link 1</label><input type="text" id="b-nav1" placeholder="Work"/></div>
+        <div class="field"><label>Link 2</label><input type="text" id="b-nav2" placeholder="About"/></div>
+        <div class="field"><label>Link 3</label><input type="text" id="b-nav3" placeholder="Services"/></div>
+      </div>
+      <div class="field" style="max-width:33%">
+        <label>Link 4</label>
+        <input type="text" id="b-nav4" placeholder="Contact"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCIAL -->
+  <div class="section" id="section-social">
+    <div class="section-header">
+      <h2>Social & Contact</h2>
+      <p>Update your email address and social media handles.</p>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Contact</h3></div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="s-email" placeholder="hi@yoursite.com"/>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Social Links</h3></div>
+      <div class="field-row">
+        <div class="field">
+          <label>Instagram Handle</label>
+          <input type="text" id="s-instagram" placeholder="yourhandle"/>
+        </div>
+        <div class="field">
+          <label>Twitter / X Handle</label>
+          <input type="text" id="s-twitter" placeholder="yourhandle"/>
+        </div>
+      </div>
+      <div class="field" style="max-width:50%">
+        <label>LinkedIn Username</label>
+        <input type="text" id="s-linkedin" placeholder="your-linkedin-name"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg">Changes saved successfully</span>
+</div>
+
+<script>
+  // ── Storage key ──
+  const STORAGE_KEY = "portfolio_content";
+
+  // ── Default data ──
+  const DEFAULTS = {
+    images: [
+      { url:"https://assets.codepen.io/7558/orange-portrait_01.jpg", title:"Begin Before You're Ready", description:"The work starts when you notice the quiet pull. Breathe once, clear the room inside you, and move one pixel forward." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_02.jpg", title:"Negative Space, Positive Signal", description:"Leave room around the idea. In the silence, the design answers back and shows you what to remove." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_03.jpg", title:"Friction Is a Teacher", description:"When the line resists, listen. Constraints are coordinates—plot them, then chart a cleaner route." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_04.jpg", title:"Golden Minute", description:"Catch the light while it's honest. One honest frame beats a hundred almosts." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_05.jpg", title:"Shadow Carries Form", description:"The dark reveals the edge. Let contrast articulate what you mean but can't yet say." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_06.jpg", title:"City Breath", description:"Steel, glass, heartbeat. Edit until the street's rhythm fits inside a single grid." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_07.jpg", title:"Soft Focus, Sharp Intent", description:"Blur the noise, not the purpose. What matters remains in crisp relief." },
+      { url:"https://assets.codepen.io/7558/orange-portrait_08.jpg", title:"Time-Tested, Future-Ready", description:"Classics survive because they serve. Keep the spine, tune the surface, respect the lineage." },
+    ],
+    branding: { city:"Los Angeles", state:"California", tagline:"Est. 2025 • Summer Days", coords:"34.0522° N, 118.2437° W", nav1:"Work", nav2:"About", nav3:"Services", nav4:"Contact" },
+    social: { email:"hi@filip.fyi", instagram:"filipz__", twitter:"filipz", linkedin:"filipzrnzevic" }
+  };
+
+  // ── State ──
+  let data = JSON.parse(JSON.stringify(DEFAULTS));
+
+  // ── Load from storage ──
+  function load() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) data = JSON.parse(stored);
+    } catch(e) {}
+    populateFields();
+    renderImages();
+    updateStats();
+  }
+
+  // ── Save to storage ──
+  function saveAll() {
+    collectFields();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showToast("All changes saved successfully");
+      setStatus("saved");
+    } catch(e) {
+      showToast("Error saving — storage may be full", true);
+    }
+  }
+
+  function setStatus(s) {
+    const el = document.getElementById("saveStatus");
+    el.className = "save-status " + s;
+    el.textContent = s === "saved" ? "All changes saved" : "Unsaved changes";
+  }
+
+  function markUnsaved() { setStatus("unsaved"); }
+
+  // ── Populate form fields ──
+  function populateFields() {
+    const b = data.branding, s = data.social;
+    document.getElementById("b-city").value    = b.city    || "";
+    document.getElementById("b-state").value   = b.state   || "";
+    document.getElementById("b-tagline").value = b.tagline || "";
+    document.getElementById("b-coords").value  = b.coords  || "";
+    document.getElementById("b-nav1").value    = b.nav1    || "";
+    document.getElementById("b-nav2").value    = b.nav2    || "";
+    document.getElementById("b-nav3").value    = b.nav3    || "";
+    document.getElementById("b-nav4").value    = b.nav4    || "";
+    document.getElementById("s-email").value     = s.email     || "";
+    document.getElementById("s-instagram").value = s.instagram || "";
+    document.getElementById("s-twitter").value   = s.twitter   || "";
+    document.getElementById("s-linkedin").value  = s.linkedin  || "";
+  }
+
+  // ── Collect form fields ──
+  function collectFields() {
+    data.branding = {
+      city:    document.getElementById("b-city").value,
+      state:   document.getElementById("b-state").value,
+      tagline: document.getElementById("b-tagline").value,
+      coords:  document.getElementById("b-coords").value,
+      nav1:    document.getElementById("b-nav1").value,
+      nav2:    document.getElementById("b-nav2").value,
+      nav3:    document.getElementById("b-nav3").value,
+      nav4:    document.getElementById("b-nav4").value,
+    };
+    data.social = {
+      email:     document.getElementById("s-email").value,
+      instagram: document.getElementById("s-instagram").value,
+      twitter:   document.getElementById("s-twitter").value,
+      linkedin:  document.getElementById("s-linkedin").value,
+    };
+    // collect image edits
+    document.querySelectorAll(".image-card[data-index]").forEach(card => {
+      const i = parseInt(card.dataset.index);
+      if (data.images[i]) {
+        data.images[i].title       = card.querySelector(".img-title").value;
+        data.images[i].description = card.querySelector(".img-desc").value;
+      }
+    });
+  }
+
+  // ── Render images grid ──
+  function renderImages() {
+    const grid = document.getElementById("imagesGrid");
+    grid.innerHTML = "";
+    data.images.forEach((img, i) => {
+      const card = document.createElement("div");
+      card.className = "image-card"; card.dataset.index = i;
+      card.innerHTML = `
+        <div class="image-actions">
+          <button class="img-action-btn delete" onclick="deleteImage(${i})" title="Remove">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        ${img.url
+          ? `<img class="image-thumb" src="${img.url}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          : ''}
+        <div class="image-thumb-placeholder" style="${img.url?'display:none':''}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          No Image
+        </div>
+        <div class="image-card-body">
+          <div class="image-card-num">${String(i+1).padStart(2,"0")}</div>
+          <input class="img-title" value="${escHtml(img.title||'')}" placeholder="Title..." oninput="markUnsaved()"/>
+          <textarea class="img-desc" rows="2" placeholder="Description..." oninput="markUnsaved()">${escHtml(img.description||'')}</textarea>
+        </div>`;
+      grid.appendChild(card);
+    });
+    document.getElementById("imageCount").textContent = `${data.images.length} image${data.images.length!==1?'s':''}`;
+    updateStats();
+  }
+
+  function escHtml(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  // ── Add image ──
+  function addImage() {
+    const input = document.getElementById("newImageUrl");
+    const url = input.value.trim();
+    if (!url) { showToast("Please enter an image URL", true); return; }
+    data.images.push({ url, title:"", description:"" });
+    input.value = "";
+    renderImages();
+    markUnsaved();
+    showToast("Image added");
+  }
+
+  // ── Delete image ──
+  function deleteImage(i) {
+    collectFields();
+    data.images.splice(i, 1);
+    renderImages();
+    markUnsaved();
+  }
+
+  // ── Clear all images ──
+  function clearImages() {
+    if (!confirm("Remove all images?")) return;
+    data.images = [];
+    renderImages();
+    markUnsaved();
+  }
+
+  // ── Reset defaults ──
+  function resetAll() {
+    if (!confirm("Reset everything to defaults? This cannot be undone.")) return;
+    data = JSON.parse(JSON.stringify(DEFAULTS));
+    populateFields();
+    renderImages();
+    saveAll();
+  }
+
+  // ── Stats ──
+  function updateStats() {
+    document.getElementById("stat-images").textContent = data.images.length;
+    const titled = data.images.filter(img => img.title && img.title.trim()).length;
+    document.getElementById("stat-titled").textContent = titled;
+  }
+
+  // ── Navigation ──
+  function goTo(section) {
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.querySelector(`[data-section="${section}"]`).classList.add("active");
+    document.getElementById(`section-${section}`).classList.add("active");
+    document.getElementById("sectionTitle").textContent = section.charAt(0).toUpperCase() + section.slice(1);
+  }
+
+  document.querySelectorAll(".nav-item").forEach(item => {
+    item.addEventListener("click", e => {
+      e.preventDefault();
+      goTo(item.dataset.section);
+    });
+  });
+
+  // ── Toast ──
+  function showToast(msg, isError=false) {
+    const toast = document.getElementById("toast");
+    const dot   = toast.querySelector(".toast-dot");
+    document.getElementById("toastMsg").textContent = msg;
+    dot.style.background = isError ? "var(--red)" : "var(--green)";
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2800);
+  }
+
+  // ── Mark unsaved on any input ──
+  document.querySelectorAll("input, textarea").forEach(el => {
+    el.addEventListener("input", markUnsaved);
+  });
+
+  // ── Enter key on URL input ──
+  document.getElementById("newImageUrl").addEventListener("keydown", e => {
+    if (e.key === "Enter") addImage();
+  });
+
+  // ── Init ──
+  load();
+</script>
+</body>
+</html>
