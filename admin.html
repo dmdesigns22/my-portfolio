@@ -895,7 +895,7 @@
     ],
     branding: { city:"Los Angeles", state:"California", tagline:"Est. 2025 • Summer Days", coords:"34.0522° N, 118.2437° W", nav1:"Work", nav2:"About", nav3:"Services", nav4:"Contact" },
     social: { email:"hi@filip.fyi", instagram:"filipz__", twitter:"filipz", linkedin:"filipzrnzevic" },
-    grid: { cols:5, rows:4, itemSize:320 },
+    grid: { cols:5, rows:4, itemSize:320, itemHeight:240 },
     logo: { type:"circles", url:"", width:120, height:40, position:"left" },
     visibility: {
       logo:true,
@@ -954,7 +954,7 @@
 
   // ── Populate form fields ──
   function populateFields() {
-    const b = data.branding, s = data.social, g = data.grid || {cols:5,rows:4,itemSize:320};
+    const b = data.branding, s = data.social, g = data.grid || {cols:5,rows:4,itemSize:320,itemHeight:240};
     // logo
     const lg = data.logo || { type:"circles", url:"", width:120, height:40, position:"left" };
     selectLogoType(lg.type, true);
@@ -1006,9 +1006,10 @@
       position: selLogoPos  ? selLogoPos.dataset.pos : "left",
     };
     data.grid = {
-      cols:     parseInt(document.getElementById("g-cols").value) || 5,
-      rows:     parseInt(document.getElementById("g-rows").value) || 4,
-      itemSize: parseInt(document.getElementById("g-size").value) || 320,
+      cols:       parseInt(document.getElementById("g-cols").value) || 5,
+      rows:       parseInt(document.getElementById("g-rows").value) || 4,
+      itemSize:   parseInt(document.getElementById("g-size").value) || 320,
+      itemHeight: 240,
     };
     data.branding = {
       city:    document.getElementById("b-city").value,

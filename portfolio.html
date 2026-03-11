@@ -99,7 +99,7 @@
     .grid-container { position: relative; width: 100%; height: 100%; }
 
     .grid-item {
-      position: absolute; width: 320px; height: 320px;
+      position: absolute; width: 320px; height: 240px;
       background: #111; cursor: pointer; will-change: transform, opacity;
       z-index: 1; opacity: 1; transition: opacity 0.6s ease;
     }
@@ -511,7 +511,7 @@
         this.customEase = CustomEase.create("smooth", ".87,0,.13,1");
         this.centerEase = CustomEase.create("center", ".25,.46,.45,.94");
 
-        this.config = { itemSize:320, baseGap:16, rows:8, cols:5, currentZoom:0.6, currentGap:32 };
+        this.config = { itemSize:320, itemHeight:240, baseGap:16, rows:8, cols:5, currentZoom:0.6, currentGap:32 };
 
         // Override grid config from admin panel if saved
         try {
@@ -519,7 +519,8 @@
           if (stored && stored.grid) {
             this.config.cols     = stored.grid.cols     || 8;
             this.config.rows     = stored.grid.rows     || 5;
-            this.config.itemSize = stored.grid.itemSize || 320;
+            this.config.itemSize   = stored.grid.itemSize   || 320;
+            this.config.itemHeight = stored.grid.itemHeight || 240;
           }
         } catch(e) {}
         this.zoomState = { isActive:false, selectedItem:null, flipAnimation:null, scalingOverlay:null };
@@ -760,7 +761,7 @@
 
       calculateGridDimensions(gap = this.config.currentGap) {
         const w = this.config.cols*(this.config.itemSize+gap)-gap;
-        const h = this.config.rows*(this.config.itemSize+gap)-gap;
+        const h = this.config.rows*(this.config.itemHeight+gap)-gap;
         this.gridDimensions = { width:w, height:h, scaledWidth:w*this.config.currentZoom, scaledHeight:h*this.config.currentZoom, gap };
         return this.gridDimensions;
       }
@@ -775,8 +776,10 @@
         for (let row=0; row<this.config.rows; row++) {
           for (let col=0; col<this.config.cols; col++) {
             const item = document.createElement("div"); item.className="grid-item";
+            item.style.width = this.config.itemSize + "px";
+            item.style.height = this.config.itemHeight + "px";
             const x = col*(this.config.itemSize+this.config.currentGap);
-            const y = row*(this.config.itemSize+this.config.currentGap);
+            const y = row*(this.config.itemHeight+this.config.currentGap);
             item.style.left=`${x}px`; item.style.top=`${y}px`; item.style.opacity="0";
             const url = this.fashionImages[idx%this.fashionImages.length]; idx++;
             const img = document.createElement("img"); img.src=url; img.alt=`Fashion Portrait ${idx}`;
@@ -920,7 +923,7 @@
 
       calculateFitZoom() {
         const vw=window.innerWidth, vh=window.innerHeight-80, gap=this.calculateGapForZoom(1.0);
-        const gw=this.config.cols*(this.config.itemSize+gap)-gap, gh=this.config.rows*(this.config.itemSize+gap)-gap;
+        const gw=this.config.cols*(this.config.itemSize+gap)-gap, gh=this.config.rows*(this.config.itemHeight+gap)-gap;
         return Math.max(0.1,Math.min(2.0,Math.min((vw-80)/gw,(vh-80)/gh)));
       }
 
@@ -928,7 +931,7 @@
         const vw=window.innerWidth, vh=window.innerHeight;
         const m=new DOMMatrix(getComputedStyle(this.canvasWrapper).transform);
         const cx=(vw/2-m.m41)/m.a-this.config.itemSize/2;
-        const cy=(vh/2-m.m42)/m.a-this.config.itemSize/2;
+        const cy=(vh/2-m.m42)/m.a-this.config.itemHeight/2;
         this.gridItems.forEach((d,i)=>gsap.set(d.element,{left:cx,top:cy,scale:0.8,zIndex:this.gridItems.length-i,opacity:0}));
         gsap.to(this.gridItems.map(d=>d.element),{
           duration:0.2,
@@ -962,11 +965,11 @@
           onComplete:()=>{
             if(newGap!==this.config.currentGap){
               this.gridItems.forEach(d=>{
-                const nx=d.col*(this.config.itemSize+newGap), ny=d.row*(this.config.itemSize+newGap);
+                const nx=d.col*(this.config.itemSize+newGap), ny=d.row*(this.config.itemHeight+newGap);
                 d.baseX=nx; d.baseY=ny;
                 gsap.to(d.element,{duration:1.2,left:nx,top:ny,ease:this.customEase});
               });
-              const nw=this.config.cols*(this.config.itemSize+newGap)-newGap, nh=this.config.rows*(this.config.itemSize+newGap)-newGap;
+              const nw=this.config.cols*(this.config.itemSize+newGap)-newGap, nh=this.config.rows*(this.config.itemHeight+newGap)-newGap;
               gsap.to(this.canvasWrapper,{duration:1.2,width:nw,height:nh,ease:this.customEase});
               this.config.currentGap=newGap;
             }
