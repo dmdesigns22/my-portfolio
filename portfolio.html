@@ -287,7 +287,10 @@
       .close-button svg { width: 40px; height: 40px; }
 
       .split-screen-container { flex-direction: column; }
-      .split-left, .split-right { width: 100vw; height: 50vh; }
+      .split-left { width: 100vw; height: 100vh; background: #000; }
+      .split-right { display: none; }
+      .scaling-image-overlay img { object-fit: contain; background: #000; }
+      .zoom-target { background: #000; }
 
       .footer .info-section { text-align: center; }
     }
@@ -300,7 +303,7 @@
 
   <!-- Mobile Header -->
   <div class="mobile-header" id="mobileHeader">
-    <div class="logo-container" style="margin-bottom:0;width:3rem;height:1.5rem;">
+    <div class="logo-container" id="mobile-header-logo" style="margin-bottom:0;width:3rem;height:1.5rem;">
       <div class="logo-circles">
         <div class="circle circle-1"></div>
         <div class="circle circle-2"></div>
@@ -343,7 +346,7 @@
   <!-- Header -->
   <div class="header">
     <div class="nav-section">
-      <div class="logo-container">
+      <div class="logo-container" id="header-logo">
         <div class="logo-circles">
           <div class="circle circle-1"></div>
           <div class="circle circle-2"></div>
@@ -351,29 +354,29 @@
       </div>
     </div>
     <div class="values-section">
-      <h3>+Menu</h3>
+      <h3 id="menu-title">+Menu</h3>
       <ul>
-        <li><a href="#">Work</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Contact</a></li>
+        <li id="nav-link-1"><a href="#">Work</a></li>
+        <li id="nav-link-2"><a href="#">About</a></li>
+        <li id="nav-link-3"><a href="#">Services</a></li>
+        <li id="nav-link-4"><a href="#">Contact</a></li>
       </ul>
     </div>
     <div class="location-section">
-      <h3>+Studio</h3>
-      <p>Los Angeles</p>
-      <p>California</p>
+      <h3 id="studio-title">+Studio</h3>
+      <p id="location-city">Los Angeles</p>
+      <p id="location-state">California</p>
     </div>
     <div class="contact-section">
-      <h3>+Connect</h3>
-      <p><a href="/cdn-cgi/l/email-protection#e48c8da4828d888d94ca829d8d"><span class="__cf_email__" data-cfemail="8de5e4cdebe4e1e4fda3ebf4e4">[email&#160;protected]</span></a></p>
+      <h3 id="connect-title">+Connect</h3>
+      <p id="contact-email"><a href="/cdn-cgi/l/email-protection#e48c8da4828d888d94ca829d8d"><span class="__cf_email__" data-cfemail="8de5e4cdebe4e1e4fda3ebf4e4">[email&#160;protected]</span></a></p>
     </div>
     <div class="social-section">
-      <h3>+Follow</h3>
+      <h3 id="follow-title">+Follow</h3>
       <ul>
-        <li><a href="https://instagram.com/filipz__">Instagram</a></li>
-        <li><a href="https://x.com/filipz">Twitter</a></li>
-        <li><a href="https://linkedin.com/in/filipzrnzevic">LinkedIn</a></li>
+        <li id="social-instagram"><a href="https://instagram.com/filipz__">Instagram</a></li>
+        <li id="social-twitter"><a href="https://x.com/filipz">Twitter</a></li>
+        <li id="social-linkedin"><a href="https://linkedin.com/in/filipzrnzevic">LinkedIn</a></li>
       </ul>
     </div>
   </div>
@@ -424,8 +427,8 @@
   <!-- Footer -->
   <div class="footer">
     <div class="info-section">
-      <p>Est. 2025 • Summer Days</p>
-      <p>34.0522° N, 118.2437° W</p>
+      <p id="footer-tagline">Est. 2025 • Summer Days</p>
+      <p id="footer-coords">34.0522° N, 118.2437° W</p>
     </div>
   </div>
 
@@ -637,39 +640,40 @@
         const v = (stored && stored.visibility) ? stored.visibility : {};
         const hide = (el) => { if(el) el.style.display = "none"; };
         const show = (el, d="") => { if(el) el.style.display = d; };
-        const applyVis = (key, el, displayVal="") => {
-          if (v[key] === false) hide(el); else show(el, displayVal);
+        const applyVis = (key, els, displayVal="") => {
+          const arr = Array.isArray(els) ? els : [els];
+          arr.forEach(el => { if (v[key] === false) hide(el); else show(el, displayVal); });
         };
+        const $ = id => document.getElementById(id);
 
-        // Logo
-        applyVis("logo", document.querySelector(".logo-container"), "block");
+        // Logo (desktop + mobile header)
+        applyVis("logo", [$("header-logo"), $("mobile-header-logo")], "block");
 
         // Menu title & nav links
-        applyVis("menu-title", document.querySelector(".values-section h3"));
+        applyVis("menu-title", [$("menu-title"), $("m-menu-title")]);
         const navLinks = document.querySelectorAll(".values-section ul li");
-        ["nav1","nav2","nav3","nav4"].forEach((k,i) => { if(navLinks[i]) applyVis(k, navLinks[i]); });
+        ["nav1","nav2","nav3","nav4"].forEach((k,i) => {
+          applyVis(k, [navLinks[i], $("m-nav"+(i+1))]);
+        });
 
         // Studio section
-        applyVis("studio-title", document.querySelector(".location-section h3"));
-        const locPs = document.querySelectorAll(".location-section p");
-        applyVis("city",  locPs[0]);
-        applyVis("state", locPs[1]);
+        applyVis("studio-title", [$("studio-title"), $("m-studio-title")]);
+        applyVis("city",  [$("location-city"),  $("m-city")]);
+        applyVis("state", [$("location-state"), $("m-state")]);
 
         // Connect section
-        applyVis("connect-title", document.querySelector(".contact-section h3"));
-        applyVis("email", document.querySelector(".contact-section p"));
+        applyVis("connect-title", [$("connect-title"), $("m-connect-title")]);
+        applyVis("email", [$("contact-email"), $("m-email")]);
 
         // Follow section
-        applyVis("follow-title", document.querySelector(".social-section h3"));
-        const socialLis = document.querySelectorAll(".social-section ul li");
-        applyVis("instagram", socialLis[0]);
-        applyVis("twitter",   socialLis[1]);
-        applyVis("linkedin",  socialLis[2]);
+        applyVis("follow-title", [$("follow-title"), $("m-follow-title")]);
+        applyVis("instagram", [$("social-instagram"), $("m-instagram")]);
+        applyVis("twitter",   [$("social-twitter"),   $("m-twitter")]);
+        applyVis("linkedin",  [$("social-linkedin"),  $("m-linkedin")]);
 
         // Footer
-        const footerPs = document.querySelectorAll(".info-section p");
-        applyVis("tagline", footerPs[0]);
-        applyVis("coords",  footerPs[1]);
+        applyVis("tagline", $("footer-tagline"));
+        applyVis("coords",  $("footer-coords"));
         const b = (stored && stored.branding) ? stored.branding : {};
         const s = (stored && stored.social)   ? stored.social   : {};
 
