@@ -286,6 +286,9 @@
       .close-button { top: 1rem; right: 1rem; transform: none !important; width: 80px; height: 80px; }
       .close-button svg { width: 40px; height: 40px; }
 
+      .grid-item { cursor: pointer; }
+      .viewport, .canvas-wrapper { pointer-events: auto; }
+
       .split-screen-container { flex-direction: column; }
       .split-left { width: 100vw; height: 100vh; background: #000; }
       .split-right { display: none; }
@@ -783,7 +786,9 @@
             const img = document.createElement("img"); img.src=url; img.alt=`Fashion Portrait ${idx}`;
             item.appendChild(img);
             const data = { element:item, img, row, col, baseX:x, baseY:y, imageUrl:url, index:this.gridItems.length };
-            item.addEventListener("click",()=>{ if(!this.zoomState.isActive){ this.soundSystem.play("click"); this.enterZoomMode(data); } });
+            const tapHandler = () => { if(!this.zoomState.isActive){ this.soundSystem.play("click"); this.enterZoomMode(data); } };
+            item.addEventListener("click", tapHandler);
+            item.addEventListener("touchend", function(e){ e.preventDefault(); tapHandler(); });
             this.gridContainer.appendChild(item); this.gridItems.push(data);
           }
         }
@@ -903,7 +908,7 @@
         this.calculateGridDimensions(this.config.currentGap);
         const bounds=this.calculateBounds();
         this.draggable=Draggable.create(this.canvasWrapper,{
-          type:"x,y", bounds, edgeResistance:0.8, inertia:true,
+          type:"x,y", bounds, edgeResistance:0.8, inertia:true, minimumMovement:5,
           throwProps:{x:{velocity:"auto",resistance:300,end:v=>Math.round(v)},y:{velocity:"auto",resistance:300,end:v=>Math.round(v)}},
           onDragStart:()=>{ document.body.classList.add("dragging"); this.soundSystem.play("drag-start"); this.lastValidPosition.x=this.draggable.x; this.lastValidPosition.y=this.draggable.y; },
           onDrag:()=>{ this.lastValidPosition.x=this.draggable.x; this.lastValidPosition.y=this.draggable.y; },
