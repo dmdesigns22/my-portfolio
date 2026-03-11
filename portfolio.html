@@ -277,7 +277,7 @@
       .percentage-indicator { min-height: 44px; padding: 0.5em 0.875em; font-size: 0.68em; }
       .sound-toggle { min-height: 44px; }
 
-      .image-title-overlay { position: fixed; bottom: 0; left: 0; width: 100%; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.9)); }
+      .image-title-overlay { left: 1.25rem; right: 1.25rem; bottom: 90px; width: auto; }
       .image-slide-number, .image-slide-title, .image-slide-description { width: 100%; }
       .image-slide-title { height: 40px; }
       .image-slide-title h1 { font-size: 28px; }
@@ -286,14 +286,8 @@
       .close-button { top: 1rem; right: 1rem; transform: none !important; width: 80px; height: 80px; }
       .close-button svg { width: 40px; height: 40px; }
 
-      .grid-item { cursor: pointer; }
-      .viewport, .canvas-wrapper { pointer-events: auto; }
-
       .split-screen-container { flex-direction: column; }
-      .split-left { width: 100vw; height: 60vh; display: flex; align-items: center; justify-content: center; }
-      .split-right { display: none; }
-      .scaling-image-overlay img { object-fit: contain; background: #000; }
-      .zoom-target { background: #000; }
+      .split-left, .split-right { width: 100vw; height: 50vh; }
 
       .footer .info-section { text-align: center; }
     }
@@ -654,25 +648,24 @@
 
         // Menu title & nav links
         applyVis("menu-title", [$("menu-title"), $("m-menu-title")]);
-        const navLinks = document.querySelectorAll(".values-section ul li");
         ["nav1","nav2","nav3","nav4"].forEach((k,i) => {
-          applyVis(k, [navLinks[i], $("m-nav"+(i+1))]);
+          applyVis(k, [$("nav-link-"+(i+1)), $("m-nav"+(i+1))]);
         });
 
         // Studio section
-        applyVis("studio-title", [$("studio-title"), $("m-studio-title")]);
-        applyVis("city",  [$("location-city"),  $("m-city")]);
-        applyVis("state", [$("location-state"), $("m-state")]);
+        applyVis("studio-title", [$("studio-title"),   $("m-studio-title")]);
+        applyVis("city",         [$("location-city"),  $("m-city")]);
+        applyVis("state",        [$("location-state"), $("m-state")]);
 
         // Connect section
         applyVis("connect-title", [$("connect-title"), $("m-connect-title")]);
-        applyVis("email", [$("contact-email"), $("m-email")]);
+        applyVis("email",         [$("contact-email"), $("m-email")]);
 
         // Follow section
-        applyVis("follow-title", [$("follow-title"), $("m-follow-title")]);
-        applyVis("instagram", [$("social-instagram"), $("m-instagram")]);
-        applyVis("twitter",   [$("social-twitter"),   $("m-twitter")]);
-        applyVis("linkedin",  [$("social-linkedin"),  $("m-linkedin")]);
+        applyVis("follow-title", [$("follow-title"),     $("m-follow-title")]);
+        applyVis("instagram",    [$("social-instagram"), $("m-instagram")]);
+        applyVis("twitter",      [$("social-twitter"),   $("m-twitter")]);
+        applyVis("linkedin",     [$("social-linkedin"),  $("m-linkedin")]);
 
         // Footer
         applyVis("tagline", $("footer-tagline"));
@@ -680,26 +673,27 @@
         const b = (stored && stored.branding) ? stored.branding : {};
         const s = (stored && stored.social)   ? stored.social   : {};
 
-        if (b.city)    { const els = document.querySelectorAll(".location-section p"); if(els[0]) els[0].textContent = b.city; }
-        if (b.state)   { const els = document.querySelectorAll(".location-section p"); if(els[1]) els[1].textContent = b.state; }
-        if (b.tagline) { const els = document.querySelectorAll(".info-section p");     if(els[0]) els[0].textContent = b.tagline; }
-        if (b.coords)  { const els = document.querySelectorAll(".info-section p");     if(els[1]) els[1].textContent = b.coords; }
+        if (b.city)    { const el=$("location-city");  if(el) el.textContent=b.city; }
+        if (b.state)   { const el=$("location-state"); if(el) el.textContent=b.state; }
+        if (b.tagline) { const el=$("footer-tagline"); if(el) el.textContent=b.tagline; }
+        if (b.coords)  { const el=$("footer-coords");  if(el) el.textContent=b.coords; }
 
         // Nav links
-        const navLinkAs = document.querySelectorAll(".values-section ul li a");
-        if(b.nav1 && navLinkAs[0]) navLinkAs[0].textContent = b.nav1;
-        if(b.nav2 && navLinkAs[1]) navLinkAs[1].textContent = b.nav2;
-        if(b.nav3 && navLinkAs[2]) navLinkAs[2].textContent = b.nav3;
-        if(b.nav4 && navLinkAs[3]) navLinkAs[3].textContent = b.nav4;
+        ["nav1","nav2","nav3","nav4"].forEach((k,i) => {
+          const a = $("nav-link-"+(i+1)) && $("nav-link-"+(i+1)).querySelector("a");
+          if(b[k] && a) a.textContent = b[k];
+        });
 
         // Email
-        if (s.email) { const el = document.querySelector(".contact-section a"); if(el){ el.href=`mailto:${s.email}`; el.textContent=s.email; } }
+        if (s.email) { const a=$("contact-email") && $("contact-email").querySelector("a"); if(a){ a.href=`mailto:${s.email}`; a.textContent=s.email; } }
 
         // Social links
-        const socialLinks = document.querySelectorAll(".social-section ul li a");
-        if(s.instagram && socialLinks[0]) socialLinks[0].href = `https://instagram.com/${s.instagram}`;
-        if(s.twitter   && socialLinks[1]) socialLinks[1].href = `https://x.com/${s.twitter}`;
-        if(s.linkedin  && socialLinks[2]) socialLinks[2].href = `https://linkedin.com/in/${s.linkedin}`;
+        const _ig=$("social-instagram")&&$("social-instagram").querySelector("a");
+        const _tw=$("social-twitter")  &&$("social-twitter").querySelector("a");
+        const _li=$("social-linkedin") &&$("social-linkedin").querySelector("a");
+        if(s.instagram && _ig) _ig.href=`https://instagram.com/${s.instagram}`;
+        if(s.twitter   && _tw) _tw.href=`https://x.com/${s.twitter}`;
+        if(s.linkedin  && _li) _li.href=`https://linkedin.com/in/${s.linkedin}`;
 
         // ── Sync mobile menu content from branding/social ──
         const setMob = (id, txt) => { const el=document.getElementById(id); if(el&&txt) el.textContent=txt; };
@@ -714,20 +708,22 @@
 
         // Apply custom text from visibility panel (overrides branding defaults)
         const applyVText = (key, el) => { if (v[key+"-text"] && el) el.textContent = v[key+"-text"]; };
-        applyVText("menu-title",    document.querySelector(".values-section h3"));
-        const navLinkTexts = document.querySelectorAll(".values-section ul li a");
-        applyVText("nav1", navLinkTexts[0]); applyVText("nav2", navLinkTexts[1]);
-        applyVText("nav3", navLinkTexts[2]); applyVText("nav4", navLinkTexts[3]);
-        applyVText("studio-title",  document.querySelector(".location-section h3"));
-        const locPsT = document.querySelectorAll(".location-section p");
-        applyVText("city",  locPsT[0]); applyVText("state", locPsT[1]);
-        applyVText("connect-title", document.querySelector(".contact-section h3"));
-        applyVText("email",         document.querySelector(".contact-section a"));
-        applyVText("follow-title",  document.querySelector(".social-section h3"));
-        const socialLisT = document.querySelectorAll(".social-section ul li a");
-        applyVText("instagram", socialLisT[0]); applyVText("twitter", socialLisT[1]); applyVText("linkedin", socialLisT[2]);
-        const footerPsT = document.querySelectorAll(".info-section p");
-        applyVText("tagline", footerPsT[0]); applyVText("coords", footerPsT[1]);
+        applyVText("menu-title",   $("menu-title"));
+        ["nav1","nav2","nav3","nav4"].forEach((k,i) => {
+          const a = $("nav-link-"+(i+1)) && $("nav-link-"+(i+1)).querySelector("a");
+          applyVText(k, a);
+        });
+        applyVText("studio-title",  $("studio-title"));
+        applyVText("city",          $("location-city"));
+        applyVText("state",         $("location-state"));
+        applyVText("connect-title", $("connect-title"));
+        applyVText("email",         $("contact-email") && $("contact-email").querySelector("a"));
+        applyVText("follow-title",  $("follow-title"));
+        applyVText("instagram", $("social-instagram") && $("social-instagram").querySelector("a"));
+        applyVText("twitter",   $("social-twitter")   && $("social-twitter").querySelector("a"));
+        applyVText("linkedin",  $("social-linkedin")  && $("social-linkedin").querySelector("a"));
+        applyVText("tagline", $("footer-tagline"));
+        applyVText("coords",  $("footer-coords"));
 
         // Also apply visibility text to mobile menu
         const setMobTxt = (id, key) => { if (v[key+"-text"]) { const el=document.getElementById(id); if(el) el.textContent=v[key+"-text"]; } };
@@ -786,9 +782,7 @@
             const img = document.createElement("img"); img.src=url; img.alt=`Fashion Portrait ${idx}`;
             item.appendChild(img);
             const data = { element:item, img, row, col, baseX:x, baseY:y, imageUrl:url, index:this.gridItems.length };
-            const tapHandler = () => { if(!this.zoomState.isActive){ this.soundSystem.play("click"); this.enterZoomMode(data); } };
-            item.addEventListener("click", tapHandler);
-            item.addEventListener("touchend", function(e){ e.preventDefault(); tapHandler(); });
+            item.addEventListener("click",()=>{ if(!this.zoomState.isActive){ this.soundSystem.play("click"); this.enterZoomMode(data); } });
             this.gridContainer.appendChild(item); this.gridItems.push(data);
           }
         }
@@ -908,7 +902,7 @@
         this.calculateGridDimensions(this.config.currentGap);
         const bounds=this.calculateBounds();
         this.draggable=Draggable.create(this.canvasWrapper,{
-          type:"x,y", bounds, edgeResistance:0.8, inertia:true, minimumMovement:5,
+          type:"x,y", bounds, edgeResistance:0.8, inertia:true,
           throwProps:{x:{velocity:"auto",resistance:300,end:v=>Math.round(v)},y:{velocity:"auto",resistance:300,end:v=>Math.round(v)}},
           onDragStart:()=>{ document.body.classList.add("dragging"); this.soundSystem.play("drag-start"); this.lastValidPosition.x=this.draggable.x; this.lastValidPosition.y=this.draggable.y; },
           onDrag:()=>{ this.lastValidPosition.x=this.draggable.x; this.lastValidPosition.y=this.draggable.y; },
